@@ -18,7 +18,6 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <MapPin className="w-8 h-8 text-orange-600" />
                 <span className="ml-2 text-2xl font-black text-white">Locotraq</span>
               </div>
               <p className="text-sm mb-4">

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { 
   Package, MapPin, Truck, CheckCircle, Clock, Search, 
@@ -480,7 +482,7 @@ const TrackOrderPage = () => {
               </div>
 
               {/* Help Section */}
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 border-2 border-orange-200">
+              <div className="bg-linear-to-br from-orange-50 to-orange-100 rounded-2xl p-6 border-2 border-orange-200">
                 <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center">
                   <MessageCircle className="w-5 h-5 text-orange-600 mr-2" />
                   Need Help?
@@ -568,7 +570,7 @@ const TrackOrderPage = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-6 text-white text-center">
+            <div className="bg-linear-to-r from-orange-600 to-orange-500 rounded-xl p-6 text-white text-center">
               <Shield className="w-8 h-8 mx-auto mb-3" />
               <h3 className="font-bold text-lg mb-2">Secure Tracking</h3>
               <p className="text-orange-100 text-sm">

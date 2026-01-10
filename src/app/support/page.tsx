@@ -1,11 +1,14 @@
 "use client"
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Clock, FileText, HelpCircle, Bug, Lightbulb } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Clock, FileText, HelpCircle, Bug, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function SupportPage() {
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
   const supportOptions = [
     {
       icon: MessageCircle,
@@ -13,7 +16,8 @@ export default function SupportPage() {
       description: "Get instant help from our support team",
       action: "Start Chat",
       availability: "Mon-Fri 9 AM - 6 PM IST",
-      color: "bg-blue-500"
+      color: "bg-blue-500",
+      link: "#"
     },
     {
       icon: Phone,
@@ -21,7 +25,8 @@ export default function SupportPage() {
       description: "Speak directly with a support specialist",
       action: "+91 6390 057 777",
       availability: "Mon-Fri 9 AM - 6 PM IST",
-      color: "bg-green-500"
+      color: "bg-green-500",
+      link: "tel:+916390057777"
     },
     {
       icon: Mail,
@@ -29,7 +34,8 @@ export default function SupportPage() {
       description: "Send us a detailed message about your issue",
       action: "support@locotraq.com",
       availability: "24/7 - Response within 24 hours",
-      color: "bg-purple-500"
+      color: "bg-purple-500",
+      link: "mailto:support@locotraq.com"
     }
   ];
 
@@ -87,119 +93,149 @@ export default function SupportPage() {
     }
   ];
 
+  const additionalResources = [
+    {
+      icon: FileText,
+      title: "User Manual",
+      description: "Comprehensive guides for all our GPS tracking devices",
+      action: "Download PDF",
+      color: "text-blue-600"
+    },
+    {
+      icon: MessageCircle,
+      title: "Community Forum",
+      description: "Connect with other users and share experiences",
+      action: "Join Forum",
+      color: "text-green-600"
+    },
+    {
+      icon: Lightbulb,
+      title: "Video Tutorials",
+      description: "Step-by-step video guides for setup and troubleshooting",
+      action: "Watch Videos",
+      color: "text-purple-600"
+    }
+  ];
+
+  const toggleFaq = (index: number) => {
+    setExpandedFaq(expandedFaq === index ? null : index);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
+      {/* Navbar */}
+      <Navbar />
       {/* Header Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-linear-to-r from-orange-600 to-orange-500 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            transition={{ duration: 0.3 }}
           >
             <Link 
               href="/" 
-              className="inline-flex items-center text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
+              className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors font-semibold"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Home
             </Link>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
               Support Center
             </h1>
-            <p className="text-lg font-paragraph opacity-90 max-w-2xl mx-auto">
+            <p className="text-lg text-white/90 max-w-2xl">
               We're here to help! Get assistance with your GPS tracking devices and services.
             </p>
           </motion.div>
         </div>
-      </section>
+      </div>
 
       {/* Contact Options */}
-      <section className="py-16">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-heading font-semibold text-foreground mb-4">
-              Get in Touch
-            </h2>
-            <p className="text-lg font-paragraph text-secondary max-w-2xl mx-auto">
-              Choose the best way to reach our support team
-            </p>
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl font-black text-gray-900 mb-4">
+            Get in Touch
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Choose the best way to reach our support team
+          </p>
+        </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {supportOptions.map((option, index) => (
-              <motion.div
-                key={option.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-              >
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <CardContent className="p-8 text-center">
-                    <div className={`w-16 h-16 ${option.color} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                      <option.icon className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-heading font-semibold text-foreground mb-3">
-                      {option.title}
-                    </h3>
-                    <p className="font-paragraph text-secondary mb-4">
-                      {option.description}
-                    </p>
-                    <div className="space-y-3">
-                      <Button className="w-full">
-                        {option.action}
-                      </Button>
-                      <div className="flex items-center justify-center text-sm text-secondary font-paragraph">
-                        <Clock className="h-4 w-4 mr-2" />
-                        {option.availability}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Office Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="bg-card p-8 rounded-lg border text-center"
-          >
-            <div className="flex items-center justify-center mb-4">
-              <MapPin className="h-6 w-6 text-primary mr-2" />
-              <h3 className="text-xl font-heading font-semibold text-foreground">Our Office</h3>
-            </div>
-            <p className="font-paragraph text-secondary mb-2">
-              AIC BUILDING BHU VARANASI
-            </p>
-            <p className="font-paragraph text-secondary">
-              221005 UP INDIA
-            </p>
-          </motion.div>
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          {supportOptions.map((option, index) => (
+            <motion.div
+              key={option.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
+            >
+              <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 h-full">
+                <div className="text-center">
+                  <div className={`w-16 h-16 ${option.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <option.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {option.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {option.description}
+                  </p>
+                  <a 
+                    href={option.link}
+                    className="block w-full bg-orange-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-700 transition-colors mb-3"
+                  >
+                    {option.action}
+                  </a>
+                  <div className="flex items-center justify-center text-sm text-gray-500">
+                    <Clock className="h-4 w-4 mr-2" />
+                    {option.availability}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      </section>
+
+        {/* Office Information */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          className="bg-white rounded-xl shadow-lg p-8 text-center border-2 border-orange-200"
+        >
+          <div className="flex items-center justify-center mb-4">
+            <div className="bg-orange-100 p-3 rounded-full">
+              <MapPin className="h-6 w-6 text-orange-600" />
+            </div>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Our Office</h3>
+          <p className="text-gray-600 font-semibold mb-1">
+            AIC BUILDING BHU VARANASI
+          </p>
+          <p className="text-gray-600">
+            221005 UP INDIA
+          </p>
+        </motion.div>
+      </div>
 
       {/* Support Categories */}
-      <section className="py-16 bg-card">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.3 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-heading font-semibold text-foreground mb-4">
+            <h2 className="text-3xl font-black text-gray-900 mb-4">
               How Can We Help?
             </h2>
-            <p className="text-lg font-paragraph text-secondary max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Choose your support category for faster assistance
             </p>
           </motion.div>
@@ -210,24 +246,24 @@ export default function SupportPage() {
                 key={category.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-background p-6 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 hover:border-orange-500 transition-all cursor-pointer"
               >
                 <div className="text-center mb-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <category.icon className="h-6 w-6 text-primary" />
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <category.icon className="h-6 w-6 text-orange-600" />
                   </div>
-                  <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
                     {category.title}
                   </h3>
-                  <p className="font-paragraph text-secondary text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     {category.description}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs font-paragraph text-secondary font-medium mb-2">Common topics:</p>
+                  <p className="text-xs text-gray-700 font-bold mb-2">Common topics:</p>
                   {category.examples.map((example, i) => (
-                    <div key={i} className="text-xs font-paragraph text-secondary bg-background/50 px-2 py-1 rounded">
+                    <div key={i} className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg">
                       • {example}
                     </div>
                   ))}
@@ -236,40 +272,60 @@ export default function SupportPage() {
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
       {/* FAQ Section */}
-      <section className="py-16">
+      <div className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.3 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-heading font-semibold text-foreground mb-4">
+            <h2 className="text-3xl font-black text-gray-900 mb-4">
               Frequently Asked Questions
             </h2>
-            <p className="text-lg font-paragraph text-secondary max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Quick answers to common questions about our GPS tracking services
             </p>
           </motion.div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {faqItems.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-card p-6 rounded-lg border"
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
               >
-                <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
-                  {item.question}
-                </h3>
-                <p className="font-paragraph text-secondary">
-                  {item.answer}
-                </p>
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <h3 className="text-lg font-bold text-gray-900 pr-4">
+                    {item.question}
+                  </h3>
+                  {expandedFaq === index ? (
+                    <ChevronUp className="h-5 w-5 text-orange-600 shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+                  )}
+                </button>
+                {expandedFaq === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="px-6 pb-6"
+                  >
+                    <p className="text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
+                      {item.answer}
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -277,86 +333,68 @@ export default function SupportPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
             className="text-center mt-12"
           >
-            <p className="font-paragraph text-secondary mb-4">
+            <p className="text-gray-600 mb-4 font-semibold">
               Can't find what you're looking for?
             </p>
-            <Button asChild size="lg">
-              <Link href="/contact">
-                Contact Our Support Team
-              </Link>
-            </Button>
+            <Link
+              href="/contact"
+              className="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105"
+            >
+              Contact Our Support Team
+            </Link>
           </motion.div>
         </div>
-      </section>
+      </div>
 
       {/* Additional Resources */}
-      <section className="py-16 bg-card">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.3 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-heading font-semibold text-foreground mb-4">
+            <h2 className="text-3xl font-black text-gray-900 mb-4">
               Additional Resources
             </h2>
-            <p className="text-lg font-paragraph text-secondary">
+            <p className="text-lg text-gray-600">
               Explore more ways to get help and stay informed
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="text-center">
-              <CardContent className="p-8">
-                <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
-                  User Manual
+            {additionalResources.map((resource, index) => (
+              <motion.div
+                key={resource.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="bg-gray-50 rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-all border-2 border-gray-200 hover:border-orange-500"
+              >
+                <div className="bg-white p-4 rounded-full inline-block mb-4">
+                  <resource.icon className={`h-12 w-12 ${resource.color}`} />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                  {resource.title}
                 </h3>
-                <p className="font-paragraph text-secondary mb-4 text-sm">
-                  Comprehensive guides for all our GPS tracking devices
+                <p className="text-gray-600 mb-6 text-sm">
+                  {resource.description}
                 </p>
-                <Button variant="outline" size="sm">
-                  Download PDF
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-8">
-                <MessageCircle className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
-                  Community Forum
-                </h3>
-                <p className="font-paragraph text-secondary mb-4 text-sm">
-                  Connect with other users and share experiences
-                </p>
-                <Button variant="outline" size="sm">
-                  Join Forum
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-8">
-                <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
-                  Video Tutorials
-                </h3>
-                <p className="font-paragraph text-secondary mb-4 text-sm">
-                  Step-by-step video guides for setup and troubleshooting
-                </p>
-                <Button variant="outline" size="sm">
-                  Watch Videos
-                </Button>
-              </CardContent>
-            </Card>
+                <button className="bg-orange-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-700 transition-colors w-full">
+                  {resource.action}
+                </button>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

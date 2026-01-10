@@ -152,9 +152,6 @@ export default function Navbar({
     { name: "Shop", href: "/products" },
     { name: "New Arrivals", href: "/new-arrivals", icon: TrendingUp },
     { name: "Best Sellers", href: "/best-sellers", icon: Star },
-    { name: "Deals & Offers", href: "/deals", icon: Tag },
-    { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
   ];
 
   const profileMenuItems = [
@@ -203,7 +200,7 @@ export default function Navbar({
                   <Link
                     key={cat.name}
                     href={cat.href}
-                    className="text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors"
+                    className="text-sm text-gray-700 hover:text-orange-600 transition-colors"
                   >
                     {cat.name}
                   </Link>
@@ -219,7 +216,6 @@ export default function Navbar({
                   <Package className="w-4 h-4 mr-1" />
                   Track Order
                 </Link>
-
                 <Link
                   href="/gift-cards"
                   className="flex items-center hover:text-orange-600 transition-colors"
@@ -288,7 +284,7 @@ export default function Navbar({
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="font-semibold text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-1"
+                  className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-1"
                 >
                   {link.icon && <link.icon size={16} />}
                   {link.name}

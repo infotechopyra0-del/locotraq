@@ -10,6 +10,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface GPSProduct {
   id: string;
@@ -38,7 +39,6 @@ interface GPSProduct {
   updatedAt?: Date;
 }
 
-// Mock products data
 const products: GPSProduct[] = [
     {
       id: 'loco-vehicle-tracking-device',
@@ -893,8 +893,6 @@ function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
 
   useEffect(() => {
     let filtered = products;
-
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(product =>
         (product.productName || product.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -950,7 +948,7 @@ Please provide details about availability and delivery.`;
       <Header cartCount={cartCount} wishlistCount={wishlistCount} />
 
       {/* Hero Header */}
-      <section className="bg-gradient-to-r from-orange-600 to-orange-500 text-white py-16 relative overflow-hidden">
+      <section className="bg-linear-to-r from-orange-600 to-orange-500 text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
@@ -986,7 +984,7 @@ Please provide details about availability and delivery.`;
       </section>
 
       {/* Filters Section */}
-      <section className="sticky top-20 z-40 bg-white border-b-2 border-gray-200 shadow-md">
+      <section className="z-40 bg-white border-b-2 border-gray-200 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search */}
@@ -1063,7 +1061,7 @@ Please provide details about availability and delivery.`;
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-gradient-to-r from-orange-50 to-orange-100 py-6">
+      <section className="bg-linear-to-r from-orange-50 to-orange-100 py-6">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
@@ -1264,7 +1262,7 @@ Please provide details about availability and delivery.`;
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-orange-600 to-orange-500">
+      <section className="py-16 bg-linear-to-r from-orange-600 to-orange-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1308,6 +1306,9 @@ Please provide details about availability and delivery.`;
           </motion.div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

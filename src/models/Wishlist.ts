@@ -47,9 +47,8 @@ const WishlistSchema = new Schema<IWishlist>({
 });
 
 // Update totalItems before saving
-WishlistSchema.pre('save', function(next) {
+WishlistSchema.pre('save', function() {
   this.totalItems = this.items.length;
-  next();
 });
 
 // Static method to find or create wishlist
