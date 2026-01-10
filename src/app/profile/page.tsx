@@ -337,7 +337,7 @@ export default function UserProfile() {
           transition={{ duration: 0.3, delay: 0.2 }}
           className="bg-white rounded-2xl shadow-lg overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-orange-600 to-orange-500 p-6">
+          <div className="bg-linear-to-r from-orange-600 to-orange-500 p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-white">Profile Information</h2>
               {!isEditing ? (

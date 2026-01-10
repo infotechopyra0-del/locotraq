@@ -147,12 +147,6 @@ export default function Navbar({
     await fetch(`/api/search?q=${value}`);
   };
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Shop", href: "/products" },
-    { name: "New Arrivals", href: "/new-arrivals", icon: TrendingUp },
-    { name: "Best Sellers", href: "/best-sellers", icon: Star },
-  ];
 
   const profileMenuItems = [
     { name: "My Profile", href: "/profile", icon: User },
@@ -210,7 +204,7 @@ export default function Navbar({
               {/* Right Quick Links */}
               <div className="flex items-center space-x-6 text-sm text-gray-600">
                 <Link
-                  href="/track-order"
+                  href="/profile/track-order"
                   className="flex items-center hover:text-orange-600 transition-colors"
                 >
                   <Package className="w-4 h-4 mr-1" />
@@ -277,20 +271,6 @@ export default function Navbar({
                 />
               </div>
             </div>
-
-            {/* NAV LINKS */}
-            <nav className="hidden xl:flex gap-6">
-              {navLinks.slice(0, 4).map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-1"
-                >
-                  {link.icon && <link.icon size={16} />}
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
 
             {/* RIGHT ICONS */}
             <div className="flex items-center gap-4">
@@ -498,21 +478,6 @@ export default function Navbar({
                 Login / Register
               </Link>
             )}
-
-            {/* Main Navigation */}
-            <div className="space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenu(false)}
-                  className="flex items-center gap-2 py-2 font-semibold text-gray-700 hover:text-orange-600"
-                >
-                  {link.icon && <link.icon size={18} />}
-                  {link.name}
-                </Link>
-              ))}
-            </div>
 
             {/* Categories */}
             <div className="border-t border-gray-200 pt-4 mt-4">

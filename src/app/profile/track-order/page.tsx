@@ -8,6 +8,8 @@ import {
   Share2, Copy, ExternalLink, Shield, Star, MessageCircle,
   ArrowRight, PackageCheck, PackageX, TrendingUp, Info
 } from 'lucide-react';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface TrackingEvent {
   status: string;
@@ -170,6 +172,8 @@ const TrackOrderPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navbar */}
+      <Navbar />
       {/* Header */}
       <div className="bg-linear-to-r from-orange-600 to-orange-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -608,6 +612,9 @@ const TrackOrderPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

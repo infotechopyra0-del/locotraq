@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: string;
@@ -30,7 +32,6 @@ interface Product {
   isFeatured?: boolean;
 }
 
-// Mock product data
 const product: Product = {
   id: '1',
   productName: 'Loco Professional Vehicle GPS Tracker',
@@ -123,27 +124,8 @@ Please confirm availability and provide payment details.`;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb & Back Button */}
-      <div className="bg-white border-b-2 border-gray-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/products">
-              <button className="flex items-center space-x-2 text-orange-600 hover:text-orange-700 font-bold transition-colors group">
-                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <span>Back to Products</span>
-              </button>
-            </Link>
-            <div className="hidden md:flex items-center text-sm text-gray-600 space-x-2">
-              <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
-              <ChevronRight className="w-4 h-4" />
-              <Link href="/products" className="hover:text-orange-600 transition-colors">Products</Link>
-              <ChevronRight className="w-4 h-4" />
-              <span className="text-orange-600 font-semibold">{product.productName}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {/* Navbar */}
+      <Navbar />
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -539,6 +521,8 @@ Please confirm availability and provide payment details.`;
           </button>
         </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
