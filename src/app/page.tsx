@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShoppingCart, Search, User, Menu, X, Star, Truck, Shield, 
   Zap, MapPin, Clock, Phone, Mail, Facebook, Twitter, Instagram, 
@@ -9,11 +9,11 @@ import {
   BadgeCheck, Percent, Gift, Sparkles, ThumbsUp, MessageCircle, PlayCircle
 } from 'lucide-react';
 import { Calendar } from 'lucide-react';
-import {  useUser } from '@clerk/nextjs';
 
-import { ClerkAvailableContext } from '@/components/ClerkProviderWrapper';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: string;
@@ -1002,18 +1002,7 @@ const categories = [
     { name: 'INDUSTRIAL SOLUTIONS', image: 'https://tiindia.com/wp-content/uploads/2021/09/cg-power-bg.jpg', link: '/shop?category=dresses' }
   ];
 export default function LocotraqHome() {
-  const clerkAvailable = useContext(ClerkAvailableContext);
-
-  if (clerkAvailable) {
-    return <LocotraqHomeWithUser />;
-  }
-
   return <LocotraqHomeCore isSignedIn={false} user={null} />;
-}
-
-function LocotraqHomeWithUser() {
-  const { isSignedIn, user } = useUser();
-  return <LocotraqHomeCore isSignedIn={!!isSignedIn} user={user ?? null} />;
 }
 
 function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any }) {
@@ -1185,6 +1174,7 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
       {/* Hero Slider */}
       <section className="relative h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-linear-to-r from-orange-50 to-orange-100">
         <div className="relative h-full">
@@ -1225,12 +1215,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
                       >
                         {slide.cta}
                         <ArrowRight className="ml-2 w-5 h-5" />
-                      </Link>
-                      <Link
-                        href="/demo"
-                        className="border-2 border-orange-600 text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-600 hover:text-white transition-all transform hover:scale-105 flex items-center justify-center"
-                      >
-                        Watch Demo
                       </Link>
                     </div>
                     <div className="flex items-center space-x-8 pt-6">
@@ -1782,6 +1766,8 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
           </div>
         </div>
       </section>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

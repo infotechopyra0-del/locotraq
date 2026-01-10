@@ -65,7 +65,7 @@ const Footer = () => {
               <ul className="space-y-2">
                 <li className="flex items-center">
                   <Phone className="w-4 h-4 mr-2 text-orange-600" />
-                  +91 1234567890
+                  +91 6390 057 777
                 </li>
                 <li className="flex items-center">
                   <Mail className="w-4 h-4 mr-2 text-orange-600" />
@@ -73,7 +73,7 @@ const Footer = () => {
                 </li>
                 <li className="flex items-start">
                   <MapPin className="w-4 h-4 mr-2 text-orange-600 mt-1" />
-                  <span>123 Business Park, New Delhi, India</span>
+                  <span>AIC BUILDING BHU VARANASI 221005 UP INDIA</span>
                 </li>
               </ul>
             </div>
@@ -81,7 +81,7 @@ const Footer = () => {
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-sm">
-              © 2025 Locotraq. All rights reserved. | Privacy Policy | Terms & Conditions
+              © 2026 Locotraq. All rights reserved. | Privacy Policy | Terms & Conditions
             </p>
           </div>
         </div>

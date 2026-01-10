@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import WhatsAppChatBot from "@/components/WhatsAppChatBot";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { Providers } from './providers';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,21 +55,12 @@ export default function RootLayout({
         <meta name="google-site-verification" content="jier1Y4IG14gGypdu6dRExc2y3gSH1I9nxtl8ult6gA" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased `} suppressHydrationWarning>
-      <Header />
           <main>
-            {children}
+            <Providers>{children}</Providers>
           </main>
-          <Footer />
           <WhatsAppChatBot />
           <ServiceWorkerRegister />
       </body>
     </html>
   );
 }
-
-const categories = [
-    { name: 'VEHICAL TRACKERS', image: 'https://hips.hearstapps.com/hmg-prod/images/gettyimages-2196644631-68b876f1b7c39.jpg?crop=1xw:1xh;center,top', link: '/shop?category=tops' },
-    { name: 'PERSONAL TRACKERS', image: 'https://media.wired.com/photos/593278065c4fbd732b552ed0/3:2/w_2560%2Cc_limit/GPS-Tracker-in-Hands_Jon-Snyder.jpg', link: '/shop?category=abayas' },
-    { name: 'FLEET MANAGEMENT', image: 'https://stavecorp.com/wp-content/uploads/2025/05/FTSM-Post-Photo1.jpg', link: '/shop?category=co-ords' },
-    { name: 'INDUSTRIAL SOLUTIONS', image: 'https://tiindia.com/wp-content/uploads/2021/09/cg-power-bg.jpg', link: '/shop?category=dresses' }
-  ];

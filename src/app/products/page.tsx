@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Search, Filter, ShoppingCart, Star, ArrowRight, Eye, Heart, 
@@ -9,8 +9,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useUser } from '@clerk/nextjs';
-import { ClerkAvailableContext } from '@/components/ClerkProviderWrapper';
 import Header from '@/components/Header';
 
 interface GPSProduct {
@@ -878,18 +876,7 @@ const products: GPSProduct[] = [
   ];
 
 export default function ProductsPage() {
-  const clerkAvailable = useContext(ClerkAvailableContext);
-
-  if (clerkAvailable) {
-    return <ProductsPageWithUser />;
-  }
-
   return <ProductsPageCore isSignedIn={false} />;
-}
-
-function ProductsPageWithUser() {
-  const { isSignedIn } = useUser();
-  return <ProductsPageCore isSignedIn={!!isSignedIn} />;
 }
 
 function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {

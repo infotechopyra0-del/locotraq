@@ -1,16 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, User, ArrowRight, Search, Tag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Image } from '@/components/ui/image';
-import Link from 'next/link';
-import { format } from 'date-fns';
-
+import { Calendar, User, ArrowRight, Search, Tag, Clock, TrendingUp, Filter, X } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 interface BlogPost {
   id: string;
   title: string;
@@ -107,15 +100,16 @@ const staticBlogPosts: BlogPost[] = [
     slug: "technology-behind-gps-satellite-tracking"
   }
 ];
+import Link from 'next/link';
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
-    // Initialize with static blog posts data
     const sortedPosts = staticBlogPosts.sort((a, b) => {
       const dateA = new Date(a.publicationDate);
       const dateB = new Date(b.publicationDate);
@@ -128,7 +122,6 @@ export default function BlogPage() {
   useEffect(() => {
     let filtered = posts;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(post =>
         post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,7 +130,6 @@ export default function BlogPage() {
       );
     }
 
-    // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(post => post.category === selectedCategory);
     }
@@ -150,7 +142,8 @@ export default function BlogPage() {
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return '';
     try {
-      return format(new Date(date), 'MMM dd, yyyy');
+      const d = new Date(date);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     } catch {
       return '';
     }
@@ -162,294 +155,387 @@ export default function BlogPage() {
     return content.substring(0, maxLength) + '...';
   };
 
+  const popularTopics = [
+    'Fleet Management',
+    'Vehicle Security',
+    'GPS Technology',
+    'Asset Tracking',
+    'Industry Insights',
+    'Product Updates',
+    'Best Practices',
+    'Case Studies'
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F9F9F9]">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <section className="bg-primary text-primary-foreground py-16">
-        <div className="max-w-400 mx-auto px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl lg:text-5xl font-heading font-bold mb-4">
-              Blog & Resources
+      <Header />
+      {/* Hero Section */}
+      <section className="relative bg-linear-to-r from-orange-600 to-orange-500 text-white py-16 md:py-24 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
+              📚 LOCOTRAQ BLOG
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight">
+              GPS Tracking Insights & News
             </h1>
-            <p className="text-lg font-paragraph opacity-90 max-w-2xl mx-auto">
-              Stay updated with the latest insights, tips, and news about GPS tracking technology and industry trends
+            <p className="text-lg md:text-xl text-white/90 mb-8">
+              Stay updated with the latest insights, tips, and industry trends in GPS tracking technology
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Search and Filter */}
-      <section className="py-8 bg-white border-b">
-        <div className="max-w-400 mx-auto px-8">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary h-4 w-4" />
-                <Input
-                  placeholder="Search articles..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+      {/* Stats Bar */}
+      <section className="bg-white py-6 border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="transform hover:scale-105 transition-transform">
+              <div className="text-2xl md:text-3xl font-black text-orange-600">{filteredPosts.length}</div>
+              <div className="text-xs md:text-sm text-gray-600 font-semibold">Articles</div>
+            </div>
+            <div className="transform hover:scale-105 transition-transform">
+              <div className="text-2xl md:text-3xl font-black text-orange-600">{categories.length}</div>
+              <div className="text-xs md:text-sm text-gray-600 font-semibold">Categories</div>
+            </div>
+            <div className="transform hover:scale-105 transition-transform">
+              <div className="text-2xl md:text-3xl font-black text-orange-600">10K+</div>
+              <div className="text-xs md:text-sm text-gray-600 font-semibold">Monthly Readers</div>
+            </div>
+            <div className="transform hover:scale-105 transition-transform">
+              <div className="text-2xl md:text-3xl font-black text-orange-600">Weekly</div>
+              <div className="text-xs md:text-sm text-gray-600 font-semibold">Updates</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Filter Section */}
+      <section className="bg-white py-4 md:py-6 sticky top-0 z-40 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Desktop Filters */}
+            <div className="hidden md:flex gap-2 flex-wrap flex-1">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-4 py-2 rounded-lg font-bold transition-all transform hover:scale-105 ${
+                  selectedCategory === 'all'
+                    ? 'bg-orange-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                All Articles
+              </button>
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category || '')}
+                  className={`px-4 py-2 rounded-lg font-bold transition-all transform hover:scale-105 ${
+                    selectedCategory === category
+                      ? 'bg-orange-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="md:hidden flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg font-bold w-full justify-center"
+            >
+              <Filter className="w-4 h-4" />
+              Filters {selectedCategory !== 'all' && '(1)'}
+            </button>
+
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
+              <TrendingUp className="w-4 h-4 text-orange-600" />
+              <span className="hidden sm:inline">{filteredPosts.length} articles found</span>
+              <span className="sm:hidden">{filteredPosts.length} results</span>
+            </div>
+          </div>
+
+          {/* Mobile Filters Dropdown */}
+          {showMobileFilters && (
+            <div className="md:hidden mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-bold text-gray-900">Filter by Category</h3>
+                <button onClick={() => setShowMobileFilters(false)}>
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
               </div>
-              
-              <div className="flex gap-2 flex-wrap">
-                <Button
-                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                  onClick={() => setSelectedCategory('all')}
-                  size="sm"
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    setShowMobileFilters(false);
+                  }}
+                  className={`px-3 py-2 rounded-lg font-semibold text-sm ${
+                    selectedCategory === 'all'
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-white text-gray-700 border border-gray-200'
+                  }`}
                 >
                   All
-                </Button>
+                </button>
                 {categories.map(category => (
-                  <Button
+                  <button
                     key={category}
-                    variant={selectedCategory === category ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category || '')}
-                    size="sm"
+                    onClick={() => {
+                      setSelectedCategory(category || '');
+                      setShowMobileFilters(false);
+                    }}
+                    className={`px-3 py-2 rounded-lg font-semibold text-sm ${
+                      selectedCategory === category
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-white text-gray-700 border border-gray-200'
+                    }`}
                   >
                     {category}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
-
-            <span className="font-paragraph text-secondary">
-              {filteredPosts.length} articles found
-            </span>
-          </div>
+          )}
         </div>
       </section>
 
       {/* Featured Post */}
       {filteredPosts.length > 0 && (
-        <section className="py-12">
-          <div className="max-w-400 mx-auto px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Card className="border-0 shadow-lg overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="grid grid-cols-1 lg:grid-cols-2">
-                    <div className="relative">
-                      <Image
-                        src={filteredPosts[0].featuredImage || `https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.png?id=featured-blog-post`}
-                        alt={filteredPosts[0].title || 'Featured blog post'}
-                        width={600}
-                        className="w-full h-64 lg:h-full object-cover"
-                      />
-                      <Badge className="absolute top-4 left-4 bg-soft-gold text-foreground">
-                        Featured
-                      </Badge>
-                    </div>
-                    
-                    <div className="p-8 lg:p-12 flex flex-col justify-center">
-                      <div className="flex items-center gap-4 mb-4">
-                        <Badge variant="outline" className="border-primary text-primary">
-                          {filteredPosts[0].category}
-                        </Badge>
-                        <div className="flex items-center text-sm text-secondary">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {formatDate(filteredPosts[0].publicationDate)}
-                        </div>
-                      </div>
-                      
-                      <h2 className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-4">
-                        {filteredPosts[0].title}
-                      </h2>
-                      
-                      <p className="font-paragraph text-secondary mb-6">
-                        {filteredPosts[0].metaDescription || truncateContent(filteredPosts[0].content)}
-                      </p>
+        <section className="py-8 md:py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900">Featured Article</h2>
+            </div>
+            
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                <div className="relative h-64 lg:h-full">
+                  <img
+                    src={filteredPosts[0].featuredImage || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80'}
+                    alt={filteredPosts[0].title || 'Featured blog post'}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 left-4 bg-orange-600 text-white px-4 py-1 rounded-full text-xs font-black shadow-lg">
+                    ⭐ FEATURED
+                  </div>
+                </div>
+                
+                <div className="p-6 md:p-8 lg:p-12 flex flex-col justify-center">
+                  <div className="inline-block bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-bold mb-4 self-start">
+                    {filteredPosts[0].category}
+                  </div>
+                  
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 mb-4 leading-tight">
+                    {filteredPosts[0].title}
+                  </h2>
+                  
+                  <p className="text-gray-600 mb-6 text-base md:text-lg">
+                    {filteredPosts[0].metaDescription || truncateContent(filteredPosts[0].content)}
+                  </p>
 
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <User className="h-4 w-4 text-secondary mr-2" />
-                          <span className="font-paragraph text-secondary text-sm">
-                            {filteredPosts[0].author?.name || 'Locotraq Team'}
-                          </span>
-                        </div>
-                        
-                        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-                          <Link href={`/blog/${filteredPosts[0].slug || filteredPosts[0].id}`}>
-                            Read More <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
+                  <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      {formatDate(filteredPosts[0].publicationDate)}
+                    </div>
+                    <div className="flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      {filteredPosts[0].author?.name || 'Locotraq Team'}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-2" />
+                      5 min read
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  
+                  <button className="bg-orange-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105 flex items-center justify-center group shadow-lg">
+                    Read Full Article
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       )}
 
       {/* Blog Posts Grid */}
-      <section className="py-12">
-        <div className="max-w-400 mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.slice(1).map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={post.featuredImage || 'https://static.wixstatic.com/media/d1fa15_1ef83c962dbf4c359f228449d51c8e75~mv2.png?originWidth=384&originHeight=192'}
-                        alt={post.title || 'Blog post'}
-                        width={400}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {post.category && (
-                        <Badge className="absolute top-3 left-3 bg-soft-gold text-foreground">
-                          {post.category}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="p-6">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className="flex items-center text-sm text-secondary">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {formatDate(post.publicationDate)}
-                        </div>
-                        <div className="flex items-center text-sm text-secondary">
-                          <User className="h-4 w-4 mr-1" />
-                          {post.author?.name || 'Locotraq Team'}
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-lg font-heading font-semibold text-foreground mb-3 line-clamp-2">
-                        {post.title}
-                      </h3>
-                      
-                      <p className="font-paragraph text-secondary text-sm mb-4 line-clamp-3">
-                        {post.metaDescription || truncateContent(post.content)}
-                      </p>
-
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                      >
-                        <Link href={`/blog/${post.slug || post.id}`}>
-                          Read Article <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+      <section className="py-8 md:py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900">Latest Articles</h2>
           </div>
 
-          {filteredPosts.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16"
-            >
-              <h3 className="text-xl font-heading font-semibold text-foreground mb-2">
+          {filteredPosts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {filteredPosts.slice(1).map((post, index) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-2 overflow-hidden group"
+                >
+                  <div className="relative overflow-hidden h-48">
+                    <img
+                      src={post.featuredImage || 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=500&q=80'}
+                      alt={post.title || 'Blog post'}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    {post.category && (
+                      <div className="absolute top-3 left-3 bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
+                        {post.category}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex flex-wrap items-center gap-3 mb-3 text-xs text-gray-500">
+                      <div className="flex items-center">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        {formatDate(post.publicationDate)}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="w-3 h-3 mr-1" />
+                        5 min
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-lg md:text-xl font-black text-gray-900 mb-3 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                      {post.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {post.metaDescription || truncateContent(post.content)}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <User className="w-4 h-4 mr-2" />
+                        {post.author?.name || 'Locotraq'}
+                      </div>
+                      <Link href={`/blog/${post.slug}`}>
+                      <button className="text-orange-600 font-bold text-sm flex items-center group-hover:text-orange-700">
+                        Read
+                        <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white rounded-2xl shadow-md">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 No articles found
               </h3>
-              <p className="font-paragraph text-secondary">
+              <p className="text-gray-600 mb-6">
                 Try adjusting your search or filter criteria
               </p>
-            </motion.div>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('all');
+                }}
+                className="bg-orange-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-700 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
           )}
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section className="py-16 bg-white">
-        <div className="max-w-400 mx-auto px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <Card className="border-0 shadow-lg bg-primary text-primary-foreground max-w-2xl mx-auto">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-heading font-bold mb-4">
-                  Stay Updated
-                </h2>
-                <p className="font-paragraph opacity-90 mb-6">
-                  Subscribe to our newsletter for the latest GPS tracking insights and industry news
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Input
-                    placeholder="Enter your email address"
-                    className="flex-1 bg-white text-foreground"
-                  />
-                  <Button variant="secondary" className="bg-white text-primary hover:bg-gray-100">
-                    Subscribe
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+      {/* Newsletter Section */}
+      <section className="py-12 md:py-16 bg-g-to-r from-gray-900 to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-block bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
+              📧 STAY UPDATED
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-black mb-4">
+              Subscribe to Our Newsletter
+            </h2>
+            <p className="text-black-300 text-lg mb-8">
+              Get the latest GPS tracking insights and industry news delivered to your inbox weekly
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                className="flex-1 px-6 py-4 rounded-xl text-black-900 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-orange-300"
+              />
+              <button className="bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-xl whitespace-nowrap">
+                Subscribe Now
+              </button>
+            </div>
+            <p className="text-gray-400 text-sm mt-4">
+              Join 10,000+ subscribers. Unsubscribe anytime.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Related Topics */}
-      <section className="py-16">
-        <div className="max-w-400 mx-auto px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-heading font-bold text-foreground mb-4">
+      {/* Popular Topics */}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
               Popular Topics
             </h2>
-            <p className="text-lg font-paragraph text-secondary">
+            <p className="text-gray-600 text-lg">
               Explore articles by topic
             </p>
-          </motion.div>
+          </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            {[
-              'Fleet Management',
-              'Vehicle Security',
-              'GPS Technology',
-              'Asset Tracking',
-              'Industry Insights',
-              'Product Updates',
-              'Best Practices',
-              'Case Studies'
-            ].map((topic, index) => (
-              <motion.div
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+            {popularTopics.map((topic, index) => (
+              <button
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="bg-gray-100 hover:bg-orange-600 text-gray-700 hover:text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold transition-all transform hover:scale-105 flex items-center text-sm md:text-base shadow-sm hover:shadow-lg"
               >
-                <Button
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Tag className="mr-2 h-4 w-4" />
-                  {topic}
-                </Button>
-              </motion.div>
+                <Tag className="mr-2 w-4 h-4" />
+                {topic}
+              </button>
             ))}
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <section className="py-12 md:py-16 bg-linear-to-r from-orange-600 to-orange-500 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-black mb-4">
+            Ready to Start Tracking?
+          </h2>
+          <p className="text-lg md:text-xl text-white/90 mb-8">
+            Discover our range of GPS tracking solutions for vehicles, assets, and personal safety
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">
+              Shop Products
+            </button>
+            <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-orange-600 transition-all transform hover:scale-105">
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

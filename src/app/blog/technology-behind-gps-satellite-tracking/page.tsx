@@ -1,13 +1,31 @@
-"use client"
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowLeft, Calendar, User, Clock, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Image } from '@/components/ui/image';
+'use client';
+
+import { useState } from 'react';
+import { 
+  ArrowLeft, 
+  Calendar, 
+  User, 
+  Clock, 
+  Share2, 
+  Facebook, 
+  Twitter, 
+  Linkedin,
+  Eye,
+  Heart,
+  MessageCircle,
+  BookmarkPlus,
+  TrendingUp,
+  ChevronRight
+} from 'lucide-react';
+
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function TechnologyBehindGPSPage() {
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [likes, setLikes] = useState(247);
+  const [isLiked, setIsLiked] = useState(false);
+
   const blogPost = {
     title: "The Technology Behind GPS: How Satellite Tracking Works",
     excerpt: "Uncover the fascinating technology behind GPS and satellite tracking, explaining how it works to provide accurate location data for Locotraq devices.",
@@ -20,7 +38,8 @@ export default function TechnologyBehindGPSPage() {
     category: "Technology",
     tags: ["GPS", "Technology", "Satellite", "Tracking", "Science"],
     featuredImageUrl: "/images/TheTechnologyBehindGPS.png",
-    readTime: "8 min read"
+    readTime: "8 min read",
+    views: "12.5K"
   };
 
   const relatedPosts = [
@@ -29,402 +48,447 @@ export default function TechnologyBehindGPSPage() {
       slug: "future-fleet-management-gps-tracking",
       category: "Fleet Management",
       excerpt: "Explore how GPS tracking is revolutionizing fleet management and logistics.",
-      image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=300&h=200&fit=crop&q=80"
+      image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=300&h=200&fit=crop&q=80",
+      readTime: "6 min"
     },
     {
       title: "Choosing the Right Vehicle Tracker: A Comprehensive Guide",
       slug: "choosing-right-vehicle-tracker-guide",
       category: "Product Guides",
       excerpt: "A comprehensive guide for car owners on choosing the right vehicle tracker.",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&q=80"
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&q=80",
+      readTime: "7 min"
+    },
+    {
+      title: "Asset Tracking 101: Protecting Your Equipment",
+      slug: "asset-tracking-101",
+      category: "Business Solutions",
+      excerpt: "Essential guide to protecting your valuable equipment and inventory.",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&h=200&fit=crop&q=80",
+      readTime: "5 min"
     }
   ];
 
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(likes - 1);
+    } else {
+      setLikes(likes + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <section className="py-8 bg-card border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Link 
-              href="/blog" 
-              className="inline-flex items-center text-primary hover:text-primary/80 mb-6 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Blog
-            </Link>
-            
-            <div className="mb-6">
-              <Badge className="mb-4">{blogPost.category}</Badge>
-              <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-4">
-                {blogPost.title}
-              </h1>
-              <p className="text-lg font-paragraph text-secondary max-w-3xl">
-                {blogPost.excerpt}
-              </p>
+    <div className="min-h-screen bg-gray-50">
+       {/* Header */}
+       <Header />
+
+      {/* Hero Section */}
+      <section className="bg-linear-to-r from-gray-900 to-gray-800 text-white py-12 md:py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            {/* Category Badge */}
+            <div className="inline-block bg-orange-600 px-4 py-2 rounded-full text-sm font-black shadow-lg">
+              {blogPost.category}
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-sm text-secondary">
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black leading-tight">
+              {blogPost.title}
+            </h1>
+
+            {/* Excerpt */}
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl">
+              {blogPost.excerpt}
+            </p>
+
+            {/* Meta Info */}
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 pt-4">
               <div className="flex items-center">
-                <Image
+                <img
                   src={blogPost.author.avatarUrl}
                   alt={blogPost.author.name}
-                  width={40}
-                  className="w-10 h-10 rounded-full mr-3"
+                  className="w-12 h-12 rounded-full border-2 border-orange-500 mr-3"
                 />
-                <span className="font-medium">{blogPost.author.name}</span>
+                <div>
+                  <div className="font-bold">{blogPost.author.name}</div>
+                  <div className="text-sm text-gray-400">Technology Expert</div>
+                </div>
               </div>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-2" />
+              
+              <div className="flex items-center text-sm text-gray-300">
+                <Calendar className="w-4 h-4 mr-2" />
                 {blogPost.publishedAt.toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
                 })}
               </div>
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 mr-2" />
+              
+              <div className="flex items-center text-sm text-gray-300">
+                <Clock className="w-4 h-4 mr-2" />
                 {blogPost.readTime}
               </div>
+
+              <div className="flex items-center text-sm text-gray-300">
+                <Eye className="w-4 h-4 mr-2" />
+                {blogPost.views} views
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Featured Image */}
-      <section className="py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Image
-              src={blogPost.featuredImageUrl}
+      <section className="py-8 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <img
+              src={blogPost.featuredImageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80'}
               alt={blogPost.title}
-              width={800}
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
+              className="w-full h-64 md:h-96 lg:h-[500px] object-cover"
             />
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Article Content */}
-      <section className="py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <section className="py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Main Content */}
-            <motion.article
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="lg:col-span-8 prose prose-lg max-w-none"
-            >
-              <div className="font-paragraph text-foreground space-y-6">
-                <p className="text-lg leading-relaxed">
-                  In today's interconnected world, GPS (Global Positioning System) technology has become an integral part of our daily lives. From navigation apps on our smartphones to sophisticated fleet management systems like those offered by Locotraq, GPS technology enables precise location tracking across the globe. But have you ever wondered how this remarkable technology actually works?
-                </p>
+            {/* Article Content */}
+            <article className="lg:col-span-8">
+              <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-12">
+                {/* Engagement Bar */}
+                <div className="flex items-center justify-between pb-6 mb-8 border-b border-gray-200">
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={handleLike}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${
+                        isLiked
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Heart className={`w-5 h-5 ${isLiked ? 'fill-white' : ''}`} />
+                      {likes}
+                    </button>
+                    
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 font-bold transition-all">
+                      <MessageCircle className="w-5 h-5" />
+                      34
+                    </button>
+                  </div>
 
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  What is GPS?
-                </h2>
-                
-                <p className="leading-relaxed">
-                  GPS is a satellite-based navigation system that provides location and time information anywhere on Earth where there is an unobstructed line of sight to four or more GPS satellites. Originally developed by the U.S. Department of Defense for military applications, GPS was made available for civilian use in the 1980s and has since revolutionized navigation, tracking, and timing applications worldwide.
-                </p>
-
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  The GPS Constellation
-                </h2>
-                
-                <p className="leading-relaxed">
-                  The GPS system consists of a constellation of at least 24 operational satellites orbiting Earth at an altitude of approximately 20,200 kilometers (12,550 miles). These satellites are arranged in six orbital planes, with four satellites in each plane, ensuring that at least four satellites are visible from any point on Earth at any given time.
-                </p>
-
-                <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg my-8">
-                  <h3 className="text-lg font-heading font-medium text-blue-900 mb-3">Key GPS Facts</h3>
-                  <ul className="list-disc list-inside space-y-2 text-blue-800 text-sm">
-                    <li>Each satellite orbits Earth twice a day</li>
-                    <li>Satellites transmit signals at the speed of light</li>
-                    <li>The system provides accuracy within 3-5 meters for civilian users</li>
-                    <li>Over 31 GPS satellites are currently operational (including spares)</li>
-                  </ul>
+                  <button
+                    onClick={() => setIsBookmarked(!isBookmarked)}
+                    className={`p-2 rounded-full transition-all ${
+                      isBookmarked
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <BookmarkPlus className="w-5 h-5" />
+                  </button>
                 </div>
 
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  How GPS Positioning Works
-                </h2>
-                
-                <p className="leading-relaxed">
-                  GPS positioning is based on a mathematical principle called trilateration. Here's how it works:
-                </p>
+                {/* Article Text */}
+                <div className="prose prose-lg max-w-none space-y-6">
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    In today's interconnected world, GPS (Global Positioning System) technology has become an integral part of our daily lives. From navigation apps on our smartphones to sophisticated fleet management systems like those offered by Locotraq, GPS technology enables precise location tracking across the globe. But have you ever wondered how this remarkable technology actually works?
+                  </p>
 
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  1. Signal Transmission
-                </h3>
-                <p className="leading-relaxed">
-                  Each GPS satellite continuously broadcasts signals that include the satellite's location and the precise time the signal was transmitted. These signals travel at the speed of light (approximately 300,000 kilometers per second).
-                </p>
-
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  2. Time Measurement
-                </h3>
-                <p className="leading-relaxed">
-                  A GPS receiver (like those in Locotraq devices) calculates the time it took for each satellite signal to reach it. By multiplying this travel time by the speed of light, the receiver determines its distance from each satellite.
-                </p>
-
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  3. Trilateration Calculation
-                </h3>
-                <p className="leading-relaxed">
-                  With distance measurements from at least four satellites, the GPS receiver can calculate its precise three-dimensional position (latitude, longitude, and altitude) using trilateration. The fourth satellite is needed to account for clock synchronization errors.
-                </p>
-
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  GPS Signal Structure
-                </h2>
-                
-                <p className="leading-relaxed">
-                  GPS satellites transmit signals on multiple frequencies, with the primary civilian signal being the L1 frequency at 1575.42 MHz. Each signal contains three key components:
-                </p>
-
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Coarse/Acquisition (C/A) Code:</strong> A unique identifier for each satellite</li>
-                  <li><strong>Navigation Message:</strong> Contains satellite orbital information and system time</li>
-                  <li><strong>Carrier Wave:</strong> The base frequency that carries the other components</li>
-                </ul>
-
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  Factors Affecting GPS Accuracy
-                </h2>
-                
-                <p className="leading-relaxed">
-                  While GPS technology is remarkably accurate, several factors can affect its precision:
-                </p>
-
-                <div className="grid md:grid-cols-2 gap-6 my-8">
-                  <Card>
-                    <CardContent className="p-6">
-                      <h4 className="font-heading font-medium text-foreground mb-3">Environmental Factors</h4>
-                      <ul className="text-sm text-secondary space-y-1">
-                        <li>• Atmospheric interference</li>
-                        <li>• Weather conditions</li>
-                        <li>• Physical obstructions (buildings, mountains)</li>
-                        <li>• Multipath errors (signal reflections)</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    What is GPS?
+                  </h2>
                   
-                  <Card>
-                    <CardContent className="p-6">
-                      <h4 className="font-heading font-medium text-foreground mb-3">Technical Factors</h4>
-                      <ul className="text-sm text-secondary space-y-1">
-                        <li>• Satellite geometry</li>
-                        <li>• Clock synchronization errors</li>
-                        <li>• Receiver quality</li>
-                        <li>• Signal processing capabilities</li>
+                  <p className="text-gray-700 leading-relaxed">
+                    GPS is a satellite-based navigation system that provides location and time information anywhere on Earth where there is an unobstructed line of sight to four or more GPS satellites. Originally developed by the U.S. Department of Defense for military applications, GPS was made available for civilian use in the 1980s and has since revolutionized navigation, tracking, and timing applications worldwide.
+                  </p>
+
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    The GPS Constellation
+                  </h2>
+                  
+                  <p className="text-gray-700 leading-relaxed">
+                    The GPS system consists of a constellation of at least 24 operational satellites orbiting Earth at an altitude of approximately 20,200 kilometers (12,550 miles). These satellites are arranged in six orbital planes, with four satellites in each plane, ensuring that at least four satellites are visible from any point on Earth at any given time.
+                  </p>
+
+                  <div className="bg-linear-to-r from-orange-50 to-orange-100 border-l-4 border-orange-600 p-6 rounded-lg my-8 shadow-md">
+                    <h3 className="text-lg font-black text-orange-900 mb-3 flex items-center">
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Key GPS Facts
+                    </h3>
+                    <ul className="space-y-2 text-orange-800">
+                      <li className="flex items-start">
+                        <span className="text-orange-600 mr-2">•</span>
+                        Each satellite orbits Earth twice a day
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-600 mr-2">•</span>
+                        Satellites transmit signals at the speed of light
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-600 mr-2">•</span>
+                        The system provides accuracy within 3-5 meters for civilian users
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-600 mr-2">•</span>
+                        Over 31 GPS satellites are currently operational (including spares)
+                      </li>
+                    </ul>
+                  </div>
+
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    How GPS Positioning Works
+                  </h2>
+                  
+                  <p className="text-gray-700 leading-relaxed">
+                    GPS positioning is based on a mathematical principle called trilateration. Here's how it works:
+                  </p>
+
+                  <h3 className="text-xl font-bold text-gray-900 mt-6 mb-3">
+                    1. Signal Transmission
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Each GPS satellite continuously broadcasts signals that include the satellite's location and the precise time the signal was transmitted. These signals travel at the speed of light (approximately 300,000 kilometers per second).
+                  </p>
+
+                  <h3 className="text-xl font-bold text-gray-900 mt-6 mb-3">
+                    2. Time Measurement
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    A GPS receiver (like those in Locotraq devices) calculates the time it took for each satellite signal to reach it. By multiplying this travel time by the speed of light, the receiver determines its distance from each satellite.
+                  </p>
+
+                  <h3 className="text-xl font-bold text-gray-900 mt-6 mb-3">
+                    3. Trilateration Calculation
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    With distance measurements from at least four satellites, the GPS receiver can calculate its precise three-dimensional position (latitude, longitude, and altitude) using trilateration. The fourth satellite is needed to account for clock synchronization errors.
+                  </p>
+
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    Factors Affecting GPS Accuracy
+                  </h2>
+                  
+                  <div className="grid md:grid-cols-2 gap-6 my-8">
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+                      <h4 className="font-bold text-gray-900 mb-3 text-lg">Environmental Factors</h4>
+                      <ul className="text-sm text-gray-700 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Atmospheric interference
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Weather conditions
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Physical obstructions (buildings, mountains)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Multipath errors (signal reflections)
+                        </li>
                       </ul>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+                      <h4 className="font-bold text-gray-900 mb-3 text-lg">Technical Factors</h4>
+                      <ul className="text-sm text-gray-700 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Satellite geometry
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Clock synchronization errors
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Receiver quality
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-orange-600 mr-2">→</span>
+                          Signal processing capabilities
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
 
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  Modern GPS Enhancements
-                </h2>
-                
-                <p className="leading-relaxed">
-                  Today's GPS systems, including those used in Locotraq devices, incorporate several enhancements to improve accuracy and reliability:
-                </p>
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    GPS in Locotraq Devices
+                  </h2>
+                  
+                  <p className="text-gray-700 leading-relaxed">
+                    Locotraq's GPS tracking devices leverage advanced GPS technology combined with cellular communication to provide real-time location updates. Our devices incorporate:
+                  </p>
 
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  Assisted GPS (A-GPS)
-                </h3>
-                <p className="leading-relaxed">
-                  A-GPS uses cellular networks to provide satellite almanac data and reduce the time to first fix (TTFF), enabling faster location acquisition especially in urban environments.
-                </p>
+                  <ul className="space-y-3 my-6">
+                    {[
+                      'High-sensitivity GPS receivers for improved signal acquisition',
+                      'Multi-GNSS support for enhanced positioning accuracy',
+                      'Intelligent power management for extended battery life',
+                      'Advanced algorithms for filtering and processing location data',
+                      'Seamless integration with cellular networks for data transmission'
+                    ].map((feature, i) => (
+                      <li key={i} className="flex items-start text-gray-700">
+                        <span className="bg-orange-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
+                          {i + 1}
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
 
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  Multi-GNSS Support
-                </h3>
-                <p className="leading-relaxed">
-                  Modern GPS receivers can utilize signals from multiple Global Navigation Satellite Systems (GNSS), including GPS (USA), GLONASS (Russia), Galileo (Europe), and BeiDou (China), for improved accuracy and reliability.
-                </p>
+                  <div className="bg-linear-to-r from-green-50 to-emerald-50 border-l-4 border-green-600 p-6 rounded-lg my-8 shadow-md">
+                    <h3 className="text-lg font-black text-green-900 mb-3">
+                      🚀 The Future of GPS Technology
+                    </h3>
+                    <p className="text-green-800">
+                      As technology continues to evolve, we can expect even more accurate and efficient GPS systems. Next-generation satellites, improved signal processing, and integration with other positioning technologies will further enhance the capabilities of GPS tracking devices.
+                    </p>
+                  </div>
 
-                <h3 className="text-xl font-heading font-medium text-foreground mt-6 mb-3">
-                  Real-Time Kinematic (RTK)
-                </h3>
-                <p className="leading-relaxed">
-                  RTK GPS can achieve centimeter-level accuracy by using correction data from nearby reference stations, making it ideal for precision applications.
-                </p>
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-10 mb-4">
+                    Conclusion
+                  </h2>
+                  
+                  <p className="text-gray-700 leading-relaxed">
+                    Understanding the technology behind GPS helps us appreciate the remarkable engineering feat that enables precise location tracking anywhere on Earth. From the constellation of satellites orbiting high above us to the sophisticated receivers in our tracking devices, GPS technology continues to evolve and improve, making applications like Locotraq's tracking solutions more accurate and reliable than ever before.
+                  </p>
 
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  GPS in Locotraq Devices
-                </h2>
-                
-                <p className="leading-relaxed">
-                  Locotraq's GPS tracking devices leverage advanced GPS technology combined with cellular communication to provide real-time location updates. Our devices incorporate:
-                </p>
-
-                <ul className="list-disc list-inside space-y-2 ml-4 mb-6">
-                  <li>High-sensitivity GPS receivers for improved signal acquisition</li>
-                  <li>Multi-GNSS support for enhanced positioning accuracy</li>
-                  <li>Intelligent power management for extended battery life</li>
-                  <li>Advanced algorithms for filtering and processing location data</li>
-                  <li>Seamless integration with cellular networks for data transmission</li>
-                </ul>
-
-                <div className="bg-green-50 border border-green-200 p-6 rounded-lg my-8">
-                  <h3 className="text-lg font-heading font-medium text-green-900 mb-3">The Future of GPS Technology</h3>
-                  <p className="text-green-800 text-sm">
-                    As technology continues to evolve, we can expect even more accurate and efficient GPS systems. Next-generation satellites, improved signal processing, and integration with other positioning technologies will further enhance the capabilities of GPS tracking devices.
+                  <p className="text-gray-700 leading-relaxed">
+                    Whether you're managing a fleet of vehicles, tracking valuable assets, or ensuring the safety of loved ones, GPS technology provides the foundation for reliable, real-time location information that you can trust.
                   </p>
                 </div>
 
-                <h2 className="text-2xl font-heading font-semibold text-foreground mt-8 mb-4">
-                  Conclusion
-                </h2>
-                
-                <p className="leading-relaxed">
-                  Understanding the technology behind GPS helps us appreciate the remarkable engineering feat that enables precise location tracking anywhere on Earth. From the constellation of satellites orbiting high above us to the sophisticated receivers in our tracking devices, GPS technology continues to evolve and improve, making applications like Locotraq's tracking solutions more accurate and reliable than ever before.
-                </p>
-
-                <p className="leading-relaxed">
-                  Whether you're managing a fleet of vehicles, tracking valuable assets, or ensuring the safety of loved ones, GPS technology provides the foundation for reliable, real-time location information that you can trust.
-                </p>
+                {/* Tags Section */}
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <h3 className="font-bold text-gray-900 mb-4">Related Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {blogPost.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-100 hover:bg-orange-600 hover:text-white text-gray-700 px-4 py-2 rounded-full text-sm font-bold transition-all cursor-pointer"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </motion.article>
+            </article>
 
             {/* Sidebar */}
             <aside className="lg:col-span-4">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="sticky top-8 space-y-8"
-              >
-                {/* Share */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-heading font-semibold text-foreground mb-4 flex items-center">
-                      <Share2 className="h-5 w-5 mr-2" />
-                      Share Article
-                    </h3>
-                    <div className="flex gap-3">
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Facebook className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Twitter className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Linkedin className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="sticky top-24 space-y-6">
+                {/* Share Card */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="font-black text-gray-900 mb-4 flex items-center">
+                    <Share2 className="w-5 h-5 mr-2 text-orange-600" />
+                    Share Article
+                  </h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
+                      <Facebook className="w-5 h-5" />
+                    </button>
+                    <button className="bg-sky-500 hover:bg-sky-600 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
+                      <Twitter className="w-5 h-5" />
+                    </button>
+                    <button className="bg-blue-700 hover:bg-blue-800 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
+                      <Linkedin className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
 
-                {/* Author */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-heading font-semibold text-foreground mb-4">About the Author</h3>
-                    <div className="flex items-start space-x-4">
-                      <Image
-                        src={blogPost.author.avatarUrl}
-                        alt={blogPost.author.name}
-                        width={60}
-                        className="w-15 h-15 rounded-full"
-                      />
-                      <div>
-                        <h4 className="font-heading font-medium text-foreground">{blogPost.author.name}</h4>
-                        <p className="text-sm text-secondary mt-2">
-                          Technology expert and GPS systems specialist with over 10 years of experience in satellite navigation and tracking technologies.
-                        </p>
-                      </div>
+                {/* Author Card */}
+                <div className="bg-linear-to-br from-orange-50 to-orange-100 rounded-2xl shadow-lg p-6 border border-orange-200">
+                  <h3 className="font-black text-gray-900 mb-4">About the Author</h3>
+                  <div className="flex items-start space-x-4">
+                    <img
+                      src={blogPost.author.avatarUrl}
+                      alt={blogPost.author.name}
+                      className="w-16 h-16 rounded-full border-4 border-orange-500 shadow-md"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 text-lg">{blogPost.author.name}</h4>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Technology expert and GPS systems specialist with over 10 years of experience in satellite navigation.
+                      </p>
+                      <button className="mt-3 text-orange-600 hover:text-orange-700 font-bold text-sm flex items-center">
+                        Follow
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </button>
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Tags */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-heading font-semibold text-foreground mb-4">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {blogPost.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
                 {/* Related Posts */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-heading font-semibold text-foreground mb-4">Related Articles</h3>
-                    <div className="space-y-4">
-                      {relatedPosts.map((post, index) => (
-                        <Link key={index} href={`/blog/${post.slug}`} className="block group">
-                          <div className="flex space-x-3">
-                            <Image
-                              src={post.image}
-                              alt={post.title}
-                              width={80}
-                              className="w-20 h-16 object-cover rounded group-hover:opacity-80 transition-opacity"
-                            />
-                            <div className="flex-1">
-                              <Badge variant="outline" className="text-xs mb-1">
-                                {post.category}
-                              </Badge>
-                              <h4 className="font-heading font-medium text-foreground text-sm group-hover:text-primary transition-colors line-clamp-2">
-                                {post.title}
-                              </h4>
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="font-black text-gray-900 mb-4 flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2 text-orange-600" />
+                    Related Articles
+                  </h3>
+                  <div className="space-y-4">
+                    {relatedPosts.map((post, index) => (
+                      <div key={index} className="group cursor-pointer">
+                        <div className="flex gap-3">
+                          <img
+                            src={post.image}
+                            alt={post.title}
+                            className="w-24 h-20 object-cover rounded-lg group-hover:opacity-80 transition-opacity"
+                          />
+                          <div className="flex-1">
+                            <div className="text-xs font-bold text-orange-600 mb-1">
+                              {post.category}
+                            </div>
+                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-orange-600 transition-colors line-clamp-2 mb-1">
+                              {post.title}
+                            </h4>
+                            <div className="flex items-center text-xs text-gray-500">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {post.readTime}
                             </div>
                           </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </aside>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
+      <section className="py-16 bg-linear-to-r from-orange-600 to-orange-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-heading font-bold mb-4">
-              Ready to Experience GPS Tracking?
-            </h2>
-            <p className="text-lg font-paragraph mb-8 max-w-2xl mx-auto opacity-90">
-              Discover how Locotraq's advanced GPS tracking solutions can benefit your business or personal needs.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
-                <Link href="/products">
-                  View Our Products
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white bg-[#333333] text-white hover:bg-white hover:text-[#333333]">
-                <Link href="/contact">
-                  Contact Us
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
+          <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-bold inline-block mb-6">
+            🎯 READY TO GET STARTED?
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            Experience Advanced GPS Tracking
+          </h2>
+          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+            Discover how Locotraq's GPS tracking solutions can benefit your business or personal needs with cutting-edge technology.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-orange-600 px-8 py-4 rounded-xl font-black hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">
+              View Our Products
+            </button>
+            <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-black hover:bg-white hover:text-orange-600 transition-all transform hover:scale-105">
+              Contact Sales Team
+            </button>
+          </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
