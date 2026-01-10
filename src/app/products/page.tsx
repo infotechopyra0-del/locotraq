@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   Search, Filter, ShoppingCart, Star, ArrowRight, Eye, Heart, 
@@ -880,6 +882,8 @@ export default function ProductsPage() {
 }
 
 function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [filteredProducts, setFilteredProducts] = useState<GPSProduct[]>(products);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -930,17 +934,13 @@ function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
   }, [searchTerm, selectedCategory, sortBy, priceRange]);
 
   const handleBuyNow = (product: GPSProduct) => {
-    const message = `Hi! I'm interested in purchasing:
-
-🔹 *Product:* ${product.productName || product.name}
-🔹 *Price:* ₹${product.price?.toLocaleString('en-IN')}
-🔹 *Category:* ${product.category}
-
-${product.features ? `\n*Features:*\n${product.features.map(f => `• ${f}`).join('\n')}` : ''}
-
-Please provide details about availability and delivery.`;
-
-    window.open(`https://wa.me/916390057777?text=${encodeURIComponent(message)}`, '_blank');
+    if (!session) {
+      const checkoutUrl = `/checkout?productId=${product.id}&name=${encodeURIComponent(product.productName || product.name || 'GPS Tracker')}&price=${product.price}&image=${encodeURIComponent(product.productImage || product.imageUrl || '')}&quantity=1`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(checkoutUrl)}`);
+      return;
+    }
+    const checkoutUrl = `/checkout?productId=${product.id}&name=${encodeURIComponent(product.productName || product.name || 'GPS Tracker')}&price=${product.price}&image=${encodeURIComponent(product.productImage || product.imageUrl || '')}&quantity=1`;
+    router.push(checkoutUrl);
   };
 
   return (
@@ -1114,10 +1114,10 @@ Please provide details about availability and delivery.`;
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                  className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden h-[700px] flex flex-col"
                 >
                   {/* Product Image */}
-                  <div className="relative aspect-square overflow-hidden bg-gray-100">
+                  <div className="relative h-64 overflow-hidden bg-gray-100 shrink-0">
                     <Link href={`/products/${product.id}`}>
                       <img
                         src={product.productImage || product.imageUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop'}
@@ -1163,48 +1163,42 @@ Please provide details about availability and delivery.`;
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5">
+                  <div className="p-5 flex flex-col grow">
                     <Link href={`/products/${product.id}`}>
-                      <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer">
+                      <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer min-h-14">
                         {product.productName || product.name}
                       </h3>
                     </Link>
                     
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2 min-h-10">
                       {product.shortDescription || product.description}
                     </p>
 
                     {/* Rating */}
-                    {product.rating && (
-                      <div className="flex items-center mb-3">
+                    <div className="mb-3 h-6">
+                      {product.rating && (
                         <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(product.rating || 0)
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="ml-2 text-sm text-gray-600 font-semibold">
-                          ({product.reviewCount || 0})
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Features Tags */}
-                    {product.features && product.features.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {product.features.slice(0, 3).map((feature, idx) => (
-                          <span key={idx} className="bg-orange-50 text-orange-600 text-xs font-semibold px-2 py-1 rounded-full">
-                            {feature}
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < Math.floor(product.rating || 0)
+                                    ? 'text-yellow-400 fill-yellow-400'
+                                    : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="ml-2 text-sm text-gray-600 font-semibold">
+                            ({product.reviewCount || 0})
                           </span>
-                        ))}
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Spacer to push price and buttons to bottom */}
+                    <div className="grow"></div>
 
                     {/* Price */}
                     <div className="mb-4">

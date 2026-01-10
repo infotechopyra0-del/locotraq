@@ -1,51 +1,150 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import dbConnect from '@/lib/mongodb';
+import Order from '@/models/Order';
+import User from '@/models/User';
 
-export async function POST(req: NextRequest) {
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+});
+
+interface CreateOrderRequest {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity: number;
+  };
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      pincode: string;
+      country: string;
+    };
+  };
+  orderSummary: {
+    subtotal: number;
+    tax: number;
+    shippingCost: number;
+    discount: number;
+    total: number;
+  };
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
-    const { name, email, phone, serviceId, amount, currency = 'INR' } = body;
-
-    if (!name || !email || !phone || !serviceId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      );
     }
-
-    const amountInPaise = amount ? Number(amount) * 100 : 100 * 100; 
-
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID!,
-      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    const body: CreateOrderRequest = await request.json();
+    const { product, shippingAddress, orderSummary } = body;
+    if (!product?.id || !product?.name || !product?.price || !shippingAddress?.firstName) {
+      return NextResponse.json(
+        { success: false, message: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+    const calculatedSubtotal = product.price * product.quantity;
+    const calculatedTax = Math.round(calculatedSubtotal * 0.18);
+    const calculatedShipping = calculatedSubtotal > 1000 ? 0 : 50;
+    const calculatedTotal = calculatedSubtotal + calculatedTax + calculatedShipping - orderSummary.discount;
+    if (Math.abs(calculatedTotal - orderSummary.total) > 1) {
+      return NextResponse.json(
+        { success: false, message: 'Price mismatch detected' },
+        { status: 400 }
+      );
+    }
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const order = new Order({
+      userId: user._id,
+      orderNumber,
+      items: [{
+        productId: product.id,
+        productName: product.name,
+        productImage: product.image,
+        price: product.price,
+        quantity: product.quantity,
+        subtotal: calculatedSubtotal
+      }],
+      shippingAddress: {
+        firstName: shippingAddress.firstName,
+        lastName: shippingAddress.lastName,
+        email: shippingAddress.email,
+        phone: shippingAddress.phone,
+        street: shippingAddress.address.street,
+        city: shippingAddress.address.city,
+        state: shippingAddress.address.state,
+        pincode: shippingAddress.address.pincode,
+        country: shippingAddress.address.country
+      },
+      subtotal: calculatedSubtotal,
+      tax: calculatedTax,
+      shippingCost: calculatedShipping,
+      discount: orderSummary.discount,
+      total: calculatedTotal,
+      status: 'pending',
+      paymentStatus: 'pending',
+      paymentMethod: 'online'
     });
 
-    const shortServiceId = String(serviceId).slice(0, 12);
-    const options = {
-      amount: amountInPaise,
-      currency,
-      receipt: `r_${shortServiceId}_${Date.now()}`.slice(0, 40),
-      payment_capture: 1,
-      notes: {
-        name,
-        email,
-        phone,
-        serviceId,
-      },
-    };
+    const savedOrder = await order.save();
 
-    const order = await razorpay.orders.create(options);
+    // Create Razorpay order
+    const razorpayOrder = await razorpay.orders.create({
+      amount: Math.round(calculatedTotal * 100),
+      currency: 'INR',
+      receipt: orderNumber,
+      notes: {
+        orderId: savedOrder._id.toString(),
+        userId: user._id.toString(),
+        productName: product.name
+      }
+    });
 
     return NextResponse.json({
-      key: process.env.RAZORPAY_KEY_ID,
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      name: 'Occult369',
-      description: 'Service Payment',
-      image: '/logo.png', // update if you have a logo
-      prefill: { name, email, contact: phone },
-      notes: order.notes,
-      theme: { color: '#B8860B' },
+      success: true,
+      order: razorpayOrder,
+      dbOrder: {
+        _id: savedOrder._id,
+        orderNumber: savedOrder.orderNumber,
+        total: savedOrder.total
+      }
     });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create Razorpay order' }, { status: 500 });
+
+  } catch (error: any) {
+    console.error('Razorpay order creation error:', error);
+    
+    return NextResponse.json(
+      { 
+        success: false, 
+        message: 'Failed to create order',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: 500 }
+    );
   }
 }

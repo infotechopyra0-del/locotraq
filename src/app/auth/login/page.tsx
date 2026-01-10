@@ -67,10 +67,17 @@ function LoginForm() {
     try {
       const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
       const data = await response.json();
+      
+      // Handle service unavailable gracefully
+      if (response.status === 503) {
+        console.warn('Email check service unavailable:', data.message);
+        return false; // Allow registration to proceed
+      }
+      
       return data.exists;
     } catch (err) {
       console.error('Error checking email:', err);
-      return false;
+      return false; // Allow registration to proceed if API fails
     }
   };
 

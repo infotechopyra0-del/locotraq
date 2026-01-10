@@ -264,7 +264,7 @@ Please confirm availability and provide payment details.`;
             </div>
 
             {/* Price */}
-            <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-6 border-2 border-orange-200">
+            <div className="bg-linear-to-r from-orange-50 to-orange-100 rounded-2xl p-6 border-2 border-orange-200">
               <div className="flex items-baseline gap-3 mb-2">
                 <span className="text-4xl md:text-5xl font-black text-gray-900">
                   ₹{product.price.toLocaleString('en-IN')}
@@ -349,7 +349,7 @@ Please confirm availability and provide payment details.`;
             </div>
 
             {/* Contact Sales */}
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
+            <div className="bg-linear-to-r from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
               <h3 className="text-lg font-black mb-3 flex items-center">
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Need Help?

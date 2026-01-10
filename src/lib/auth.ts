@@ -74,24 +74,33 @@ export const authOptions: NextAuthOptions = {
         
         // For OAuth providers, save user to database
         if (account?.provider !== 'credentials') {
-          await dbConnect();
-          const existingUser = await User.findOne({ email: user.email });
-          
-          if (!existingUser) {
-            // Create new user for OAuth login
-            const newUser = new User({
-              name: user.name,
-              email: user.email,
-              emailVerified: true,
-              isActive: true,
-              role: 'user',
-              provider: account?.provider
-            });
-            await newUser.save();
-            token.id = newUser._id.toString();
-          } else {
-            token.id = existingUser._id.toString();
-            token.role = existingUser.role;
+          try {
+            await dbConnect();
+            const existingUser = await User.findOne({ email: user.email });
+            
+            if (!existingUser) {
+              // Create new user for OAuth login
+              const newUser = new User({
+                name: user.name,
+                email: user.email,
+                emailVerified: true,
+                isActive: true,
+                role: 'user',
+                provider: account?.provider
+              });
+              await newUser.save();
+              console.log('✅ New user created for OAuth login:', user.email);
+              token.id = newUser._id.toString();
+            } else {
+              console.log('✅ Existing user found for OAuth login:', user.email);
+              token.id = existingUser._id.toString();
+              token.role = existingUser.role;
+            }
+          } catch (error) {
+            console.error('❌ Database error during OAuth login:', error);
+            // Continue without database persistence for now
+            console.log('⚠️ Continuing authentication without database persistence');
+            token.id = user.id; // Use the provider's user ID as fallback
           }
         }
       }

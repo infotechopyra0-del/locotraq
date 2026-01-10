@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IOrderItem {
-  productId: mongoose.Types.ObjectId;
+  productId: string;
   productName: string;
   productImage: string;
   price: number;
@@ -46,6 +46,12 @@ export interface IOrder extends Document {
   carrier?: string;
   estimatedDelivery?: Date;
   deliveredAt?: Date;
+  paidAt?: Date;
+  
+  // Razorpay Payment Fields
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
   
   // Additional Info
   notes?: string;
@@ -66,13 +72,11 @@ const OrderSchema = new Schema<IOrder>({
   orderNumber: {
     type: String,
     required: true,
-    unique: true,
-    index: true
+    unique: true
   },
   items: [{
     productId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
+      type: String,
       required: true
     },
     productName: {
@@ -150,14 +154,12 @@ const OrderSchema = new Schema<IOrder>({
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'],
-    default: 'pending',
-    index: true
+    default: 'pending'
   },
   paymentStatus: {
     type: String,
     enum: ['pending', 'paid', 'failed', 'refunded'],
-    default: 'pending',
-    index: true
+    default: 'pending'
   },
   paymentMethod: {
     type: String,
@@ -168,6 +170,10 @@ const OrderSchema = new Schema<IOrder>({
   carrier: String,
   estimatedDelivery: Date,
   deliveredAt: Date,
+  paidAt: Date,
+  razorpayOrderId: String,
+  razorpayPaymentId: String,
+  razorpaySignature: String,
   notes: String,
   cancellationReason: String,
   refundAmount: Number
@@ -177,7 +183,6 @@ const OrderSchema = new Schema<IOrder>({
 
 // Indexes
 OrderSchema.index({ userId: 1, createdAt: -1 });
-OrderSchema.index({ orderNumber: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ createdAt: -1 });
 

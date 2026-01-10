@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import dbConnect from '@/lib/mongodb';
+import { connectToMongoDB } from '@/lib/mongodb';
 import User from '@/models/User';
 
 export async function POST(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await dbConnect();
+    await connectToMongoDB();
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -35,9 +35,15 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Split name into first and last name
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     // Create user
     const user = await User.create({
-      name,
+      firstName,
+      lastName,
       email: email.toLowerCase(),
       password: hashedPassword,
       phone,
@@ -50,7 +56,8 @@ export async function POST(req: NextRequest) {
         message: 'Account created successfully! Please login.',
         user: {
           id: user._id,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
           role: user.role
         }
@@ -60,8 +67,34 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Registration error:', error);
+    
+    // Handle specific MongoDB connection errors
+    if (error.name === 'MongooseServerSelectionError' || 
+        error.message?.includes('Could not connect to any servers')) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Registration service temporarily unavailable. Please try again later.',
+          error: 'Database connection failed'
+        },
+        { status: 503 }
+      );
+    }
+    
+    // Handle duplicate key errors (email already exists)
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { success: false, message: 'User with this email already exists' },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { success: false, message: error.message || 'Registration failed' },
+      { 
+        success: false, 
+        message: error.message || 'Registration failed',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }

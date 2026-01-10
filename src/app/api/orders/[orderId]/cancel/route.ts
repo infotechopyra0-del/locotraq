@@ -5,7 +5,7 @@ import Order from '@/models/Order';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     const session = await getServerSession();
@@ -20,6 +20,7 @@ export async function PUT(
     await dbConnect();
 
     const { reason } = await req.json();
+    const { orderId } = await params;
 
     // Find user
     const User = (await import('@/models/User')).default;
@@ -27,7 +28,7 @@ export async function PUT(
 
     // Find order
     const order = await Order.findOne({
-      _id: params.orderId,
+      _id: orderId,
       userId: user._id
     });
 

@@ -13,10 +13,7 @@ export async function GET(req: NextRequest) {
         { status: 401 }
       );
     }
-
     await dbConnect();
-
-    // Find user by email
     const User = (await import('@/models/User')).default;
     const user = await User.findOne({ email: session.user.email });
 
@@ -26,30 +23,21 @@ export async function GET(req: NextRequest) {
         { status: 404 }
       );
     }
-
-    // Get query parameters
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
     const limit = parseInt(searchParams.get('limit') || '10');
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
-
-    // Build query
     const query: any = { userId: user._id };
     if (status && status !== 'all') {
       query.status = status;
     }
-
-    // Get orders
     const orders = await Order.find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
       .lean();
-
-    // Get total count
     const totalOrders = await Order.countDocuments(query);
-
     return NextResponse.json({
       success: true,
       orders,
