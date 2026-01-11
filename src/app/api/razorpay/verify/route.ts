@@ -18,6 +18,14 @@ interface VerifyPaymentRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Runtime check for Razorpay credentials
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return NextResponse.json(
+        { success: false, message: 'Payment gateway not configured' },
+        { status: 500 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
