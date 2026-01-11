@@ -1271,13 +1271,14 @@ function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
               Our experts are ready to help you find the perfect GPS tracking solution for your needs
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/support">
               <button
-                onClick={() => window.open('https://wa.me/916390057777?text=Hi! I need help choosing a GPS tracker', '_blank')}
                 className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center"
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 Get Expert Advice
               </button>
+              </Link>
               <Link href="/quote">
                 <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-orange-600 transition-all transform hover:scale-105 flex items-center justify-center">
                   <ArrowRight className="mr-2 h-5 w-5" />

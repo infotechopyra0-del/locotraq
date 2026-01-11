@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface QuoteFormData {
   name: string;
@@ -185,8 +187,10 @@ export default function GetQuotePage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
+      {/* Navbar */}
+      <Navbar />
       {/* Header */}
-      <section className="bg-primary text-primary-foreground py-16">
+      <section className="bg-linear-to-r from-orange-600 to-orange-500 text-white py-16">
         <div className="max-w-400 mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,8 +199,8 @@ export default function GetQuotePage() {
             className="text-center"
           >
             <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-soft-gold/20 rounded-full flex items-center justify-center">
-                <Calculator className="h-8 w-8 text-soft-gold" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <Calculator className="h-8 w-8 text-white" />
               </div>
             </div>
             <h1 className="text-4xl lg:text-5xl font-heading font-bold mb-4">
@@ -221,8 +225,8 @@ export default function GetQuotePage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="w-12 h-12 bg-soft-gold/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-6 w-6 text-soft-gold" />
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <feature.icon className="h-6 w-6 text-orange-600" />
                 </div>
                 <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
                   {feature.title}
@@ -454,7 +458,7 @@ export default function GetQuotePage() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                      className="w-full bg-orange-600 text-white hover:bg-orange-700 transition-all transform hover:scale-105"
                       size="lg"
                       disabled={result === "Sending...."}
                     >
@@ -487,23 +491,23 @@ export default function GetQuotePage() {
               className="space-y-6"
             >
               {/* Estimated Cost */}
-              <Card className="border-0 shadow-lg bg-linear-to-br from-soft-gold/10 to-soft-gold/5">
+              <Card className="border-0 shadow-lg bg-linear-to-br from-orange-50 to-orange-100">
                 <CardHeader>
                   <CardTitle className="text-xl font-heading font-bold text-foreground flex items-center">
-                    <Calculator className="mr-2 h-5 w-5 text-soft-gold" />
+                    <Calculator className="mr-2 h-5 w-5 text-orange-600" />
                     Estimated Cost
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-3xl font-heading font-bold text-soft-gold mb-2">
+                    <div className="text-3xl font-heading font-bold text-orange-600 mb-2">
                       ₹{estimatedCost.toLocaleString('en-IN')}
                     </div>
                     <p className="font-paragraph text-secondary text-sm mb-4">
                       *Preliminary estimate based on your selections
                     </p>
                     <div className="flex items-center justify-center space-x-1 text-sm text-secondary">
-                      <Star className="h-4 w-4 fill-soft-gold text-soft-gold" />
+                      <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                       <span>Final quote may vary based on requirements</span>
                     </div>
                   </div>
@@ -519,14 +523,14 @@ export default function GetQuotePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <Phone className="h-5 w-5 text-soft-gold" />
+                    <Phone className="h-5 w-5 text-orange-600" />
                     <div>
                       <p className="font-paragraph font-medium text-foreground">Call Us</p>
                       <p className="font-paragraph text-secondary text-sm">+91 6390 057 777</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Mail className="h-5 w-5 text-soft-gold" />
+                    <Mail className="h-5 w-5 text-orange-600" />
                     <div>
                       <p className="font-paragraph font-medium text-foreground">Email Us</p>
                       <p className="font-paragraph text-secondary text-sm">support@locotraq.com</p>
@@ -645,6 +649,9 @@ export default function GetQuotePage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

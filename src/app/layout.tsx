@@ -25,8 +25,16 @@ export const metadata: Metadata = {
     title: "Locotraq",
   },
   icons: {
-    icon: "/images/MainLogo.jpg",
-    apple: "/images/MainLogo.jpg",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/images/MainLogo.jpg", sizes: "any" },
+      { url: "/icon512_rounded.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: [
+      { url: "/images/MainLogo.jpg" },
+      { url: "/icon512_maskable.png", sizes: "512x512", type: "image/png" }
+    ],
+    shortcut: "/favicon.ico",
   },
 };
 
@@ -44,12 +52,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/images/MainLogo.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/images/MainLogo.jpg" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1f2937" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Locotraq" />
-        <link rel="apple-touch-icon" href="/images/MainLogo.jpg" />
         <meta name="msapplication-TileColor" content="#1f2937" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta name="google-site-verification" content="jier1Y4IG14gGypdu6dRExc2y3gSH1I9nxtl8ult6gA" />

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IWishlistItem {
-  productId: mongoose.Types.ObjectId;
+  productId: string; // Changed to string to work with static products
   addedAt: Date;
   priceWhenAdded: number;
 }
@@ -16,8 +16,7 @@ export interface IWishlist extends Document {
 
 const WishlistItemSchema = new Schema<IWishlistItem>({
   productId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Product',
+    type: String, // Changed to String to work with static products
     required: true
   },
   addedAt: {

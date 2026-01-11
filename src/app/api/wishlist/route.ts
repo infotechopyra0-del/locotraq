@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Wishlist from '@/models/Wishlist';
-import Product from '@/models/Product';
+import { products } from '@/lib/products';
 
 // GET - Fetch Wishlist
 export async function GET(req: NextRequest) {
@@ -19,12 +19,7 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
 
-    const wishlist = await Wishlist.findOne({ userId: session.user.id })
-      .populate({
-        path: 'items.productId',
-        select: 'productName price originalPrice productImage category subcategory rating reviewCount stockQuantity isActive inStock features specifications slug'
-      })
-      .lean();
+    const wishlist = await Wishlist.findOne({ userId: session.user.id }).lean();
 
     if (!wishlist) {
       return NextResponse.json({
@@ -36,38 +31,41 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Filter out inactive products or deleted products
-    const validItems = wishlist.items.filter((item: any) => 
-      item.productId && item.productId.isActive
-    );
+    // Get static products data
+    const staticProducts = products();
 
-    // Format wishlist items with product details
+    // Filter out items that don't have corresponding static products
+    const validItems = wishlist.items.filter((item: any) => {
+      const staticProduct = staticProducts.find(p => p.id === item.productId.toString());
+      return staticProduct && staticProduct.isActive;
+    });
+
+    // Format wishlist items with static product details
     const formattedItems = validItems.map((item: any) => {
-      const product = item.productId;
-      const priceDropped = product.price < item.priceWhenAdded;
-      const priceDropAmount = priceDropped ? item.priceWhenAdded - product.price : 0;
+      const staticProduct = staticProducts.find(p => p.id === item.productId.toString());
+      const priceDropped = staticProduct!.price < item.priceWhenAdded;
+      const priceDropAmount = priceDropped ? item.priceWhenAdded - staticProduct!.price : 0;
       
       return {
         _id: item._id,
-        productId: product._id,
-        productName: product.productName,
-        price: product.price,
-        originalPrice: product.originalPrice,
+        productId: staticProduct!.id,
+        productName: staticProduct!.productName,
+        price: staticProduct!.price,
+        originalPrice: staticProduct!.originalPrice,
         priceWhenAdded: item.priceWhenAdded,
         priceDropped,
         priceDropAmount,
-        productImage: product.productImage,
-        category: product.category,
-        subcategory: product.subcategory,
-        rating: product.rating,
-        reviewCount: product.reviewCount,
-        stockQuantity: product.stockQuantity,
-        inStock: product.inStock,
-        isActive: product.isActive,
-        features: product.features,
-        specifications: product.specifications,
-        slug: product.slug,
-        discountPercentage: Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100),
+        productImage: staticProduct!.productImage,
+        category: staticProduct!.category,
+        subcategory: staticProduct!.subcategory,
+        rating: staticProduct!.rating,
+        reviewCount: staticProduct!.reviewCount,
+        stockQuantity: staticProduct!.stockQuantity,
+        inStock: staticProduct!.inStock,
+        isActive: staticProduct!.isActive,
+        features: staticProduct!.features,
+        specifications: staticProduct!.specifications,
+        discountPercentage: Math.round(((staticProduct!.originalPrice - staticProduct!.price) / staticProduct!.originalPrice) * 100),
         addedAt: item.addedAt
       };
     });
@@ -108,33 +106,16 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { productId } = body;
+    const { productId, productName, price, image } = body;
 
-    if (!productId) {
+    if (!productId || !productName || price === undefined) {
       return NextResponse.json(
-        { success: false, message: 'Product ID is required' },
+        { success: false, message: 'Product ID, name, and price are required' },
         { status: 400 }
       );
     }
 
     await dbConnect();
-
-    // Verify product exists and is available
-    const product = await Product.findById(productId);
-    
-    if (!product) {
-      return NextResponse.json(
-        { success: false, message: 'Product not found' },
-        { status: 404 }
-      );
-    }
-
-    if (!product.isActive) {
-      return NextResponse.json(
-        { success: false, message: 'Product is not available' },
-        { status: 400 }
-      );
-    }
 
     // Find or create wishlist
     let wishlist = await Wishlist.findOne({ userId: session.user.id });
@@ -146,7 +127,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Check if product already in wishlist
+    // Check if product already in wishlist (using string productId)
     const existingItem = wishlist.items.find(
       item => item.productId.toString() === productId
     );
@@ -158,11 +139,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Add new item
+    // Add new item (store as string, will be converted by mongoose)
     wishlist.items.push({
-      productId: product._id,
+      productId: productId, // This will work as string
       addedAt: new Date(),
-      priceWhenAdded: product.price
+      priceWhenAdded: price
     });
 
     await wishlist.save();

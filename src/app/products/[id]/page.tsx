@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, ShoppingCart, Heart, Share2, Star, Check, X,
   Shield, Truck, Clock, BadgeCheck, Package, Zap, Award,
@@ -12,110 +15,210 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/Header';
 import Footer from '@/components/Footer';
+import { products, GPSProducts } from '@/lib/products';
 
-interface Product {
-  id: string;
-  productName: string;
-  description: string;
-  shortDescription: string;
-  price: number;
-  originalPrice?: number;
-  category: string;
-  subcategory?: string;
-  rating: number;
-  reviewCount: number;
-  productImage: string;
-  images?: string[];
-  features: string[];
-  specifications?: { [key: string]: string };
-  inStock: boolean;
-  isFeatured?: boolean;
-}
-
-const product: Product = {
-  id: '1',
-  productName: 'Loco Professional Vehicle GPS Tracker',
-  shortDescription: 'Real-time tracking with high precision positioning',
-  description: 'Professional-grade GPS tracking device designed for vehicles with real-time monitoring, geofencing capabilities, and advanced security features. Perfect for fleet management and personal vehicle tracking with 99.9% uptime guarantee.',
-  price: 5500,
-  originalPrice: 6500,
-  category: 'Vehicle',
-  subcategory: 'Professional',
-  rating: 4.8,
-  reviewCount: 245,
-  productImage: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80',
-  images: [
-    'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80',
-    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
-    'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80',
-  ],
-  features: [
-    'Real-time GPS tracking',
-    'Geofencing alerts',
-    'History playback',
-    'Mobile app support',
-    'Long battery life',
-    'Waterproof design',
-    'SOS button',
-    '24/7 monitoring'
-  ],
-  specifications: {
-    'GPS Accuracy': '3-15 meters',
-    'Network': '2G/3G/4G LTE',
-    'Battery': '5000mAh',
-    'Waterproof': 'IP67',
-    'Dimensions': '90 x 50 x 25mm',
-    'Weight': '180g',
-    'Working Temp': '-20°C to 70°C',
-    'Warranty': '1 Year'
-  },
-  inStock: true,
-  isFeatured: true
+const getRelatedProducts = () => {
+  const productList = products();
+  return productList
+    .filter(p => p.isFeatured) // Show featured products as related
+    .slice(0, 3) // Limit to 3 products
+    .map(p => ({
+      id: p.id,
+      name: p.productName,
+      price: p.price,
+      originalPrice: p.originalPrice,
+      image: p.productImage,
+      rating: p.rating
+    }));
 };
 
-const relatedProducts = [
-  {
-    id: '2',
-    name: 'GPS Vehicle Tracker Pro',
-    price: 4500,
-    originalPrice: 5500,
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&q=80',
-    rating: 4.6
-  },
-  {
-    id: '3',
-    name: 'Fleet Management Tracker',
-    price: 7500,
-    originalPrice: 9000,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80',
-    rating: 4.9
-  },
-  {
-    id: '4',
-    name: 'Personal Safety GPS',
-    price: 3500,
-    originalPrice: 4500,
-    image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&q=80',
-    rating: 4.7
-  }
-];
-
 export default function ProductDetailPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const params = useParams();
+  const [product, setProduct] = useState<GPSProducts | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  useEffect(() => {
+    // Get product by ID from static products
+    const productId = params.id as string;
+    const productList = products();
+    const foundProduct = productList.find(p => p.id === productId);
+    
+    if (foundProduct) {
+      setProduct(foundProduct);
+    }
+    setLoading(false);
+  }, [params.id]);
+
+  useEffect(() => {
+    // Check if product is in wishlist
+    if (product && session) {
+      checkWishlistStatus();
+    }
+  }, [product, session]);
+
+  const checkWishlistStatus = async () => {
+    try {
+      const response = await fetch('/api/wishlist');
+      if (response.ok) {
+        const data = await response.json();
+        const isInList = data.items.some((item: any) => item.productId === product?.id);
+        setIsInWishlist(isInList);
+      }
+    } catch (error) {
+      console.error('Error checking wishlist status:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading product details...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!product) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Product Not Found</h1>
+            <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
+            <Link 
+              href="/products" 
+              className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              Back to Products
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   const handleBuyNow = () => {
-    const message = `Hi! I want to purchase:
+    const checkoutUrl = `/checkout?productId=${product.id}&name=${encodeURIComponent(product.productName)}&price=${product.price}&image=${encodeURIComponent(product.productImage)}&quantity=${quantity}`;
+    router.push(checkoutUrl);
+  };
 
-🔹 *Product:* ${product.productName}
-🔹 *Price:* ₹${product.price.toLocaleString('en-IN')}
-🔹 *Quantity:* ${quantity}
-🔹 *Total:* ₹${(product.price * quantity).toLocaleString('en-IN')}
+  const handleWishlist = async () => {
+    // Check if user is authenticated
+    if (!session) {
+      toast.error('Please login first', {
+        description: 'You need to be logged in to add items to wishlist',
+        duration: 3000,
+      });
+      router.push('/auth/login');
+      return;
+    }
 
-Please confirm availability and provide payment details.`;
+    try {
+      if (!isInWishlist) {
+        // Add to wishlist
+        const response = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: product.id,
+            productName: product.productName,
+            price: product.price,
+            image: product.productImage,
+          }),
+        });
 
-    window.open(`https://wa.me/916390057777?text=${encodeURIComponent(message)}`, '_blank');
+        if (response.ok) {
+          setIsInWishlist(true);
+          toast.success('Added to wishlist!', {
+            description: 'Product has been added to your wishlist',
+            duration: 3000,
+          });
+        } else {
+          const error = await response.json();
+          toast.error('Failed to add to wishlist', {
+            description: error.message || 'Something went wrong',
+            duration: 3000,
+          });
+        }
+      } else {
+        // Remove from wishlist
+        const response = await fetch('/api/wishlist/remove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: product.id,
+          }),
+        });
+
+        if (response.ok) {
+          setIsInWishlist(false);
+          toast.success('Removed from wishlist!', {
+            description: 'Product has been removed from your wishlist',
+            duration: 3000,
+          });
+        } else {
+          const error = await response.json();
+          toast.error('Failed to remove from wishlist', {
+            description: error.message || 'Something went wrong',
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      toast.error('Network error', {
+        description: 'Please check your connection and try again',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: product.productName,
+      text: `Check out this ${product.productName} - ₹${product.price.toLocaleString('en-IN')}`,
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: Copy to clipboard
+        const shareText = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
+        await navigator.clipboard.writeText(shareText);
+        toast.success('Link copied to clipboard!', {
+          description: 'Product link has been copied to your clipboard',
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      const shareText = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
+      const userCopied = prompt('Copy this link to share:', shareText);
+      if (userCopied !== null) {
+        toast.info('Share link provided', {
+          description: 'You can copy and share the link manually',
+          duration: 3000,
+        });
+      }
+    }
   };
 
   const discount = product.originalPrice 
@@ -316,15 +419,25 @@ Please confirm availability and provide payment details.`;
                 className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all transform hover:scale-[1.02] shadow-xl flex items-center justify-center space-x-2"
               >
                 <ShoppingCart className="w-6 h-6" />
-                <span>Buy Now via WhatsApp</span>
+                <span>Buy Now</span>
               </button>
               
               <div className="grid grid-cols-2 gap-3">
-                <button className="border-2 border-orange-600 text-orange-600 py-3 rounded-xl font-bold hover:bg-orange-50 transition-all flex items-center justify-center space-x-2">
-                  <Heart className="w-5 h-5" />
-                  <span>Wishlist</span>
+                <button 
+                  onClick={handleWishlist}
+                  className={`border-2 py-3 rounded-xl font-bold transition-all flex items-center justify-center space-x-2 ${
+                    isInWishlist 
+                      ? 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700' 
+                      : 'border-orange-600 text-orange-600 hover:bg-orange-50'
+                  }`}
+                >
+                  <Heart className={`w-5 h-5 ${isInWishlist ? 'fill-white' : ''}`} />
+                  <span>{isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}</span>
                 </button>
-                <button className="border-2 border-gray-300 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center space-x-2">
+                <button 
+                  onClick={handleShare}
+                  className="border-2 border-gray-300 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center space-x-2 hover:border-orange-600 hover:text-orange-600"
+                >
                   <Share2 className="w-5 h-5" />
                   <span>Share</span>
                 </button>
@@ -418,7 +531,7 @@ Please confirm availability and provide payment details.`;
                 >
                   {product.features.map((feature, i) => (
                     <div key={i} className="flex items-center space-x-3 bg-orange-50 p-4 rounded-xl border-2 border-orange-100">
-                      <Check className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                      <Check className="w-5 h-5 text-orange-600 shrink-0" />
                       <span className="text-gray-900 font-semibold">{feature}</span>
                     </div>
                   ))}
@@ -457,7 +570,7 @@ Please confirm availability and provide payment details.`;
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedProducts.map((item) => (
+            {getRelatedProducts().map((item) => (
               <Link key={item.id} href={`/products/${item.id}`}>
                 <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden group">
                   <div className="relative aspect-square overflow-hidden">
@@ -516,8 +629,15 @@ Please confirm availability and provide payment details.`;
             <ShoppingCart className="w-5 h-5" />
             <span>Buy Now</span>
           </button>
-          <button className="border-2 border-orange-600 text-orange-600 py-4 px-6 rounded-xl font-bold hover:bg-orange-50 transition-all">
-            <Heart className="w-6 h-6" />
+          <button 
+            onClick={handleWishlist}
+            className={`py-4 px-6 rounded-xl font-bold transition-all ${
+              isInWishlist 
+                ? 'bg-orange-600 text-white hover:bg-orange-700' 
+                : 'border-2 border-orange-600 text-orange-600 hover:bg-orange-50'
+            }`}
+          >
+            <Heart className={`w-6 h-6 ${isInWishlist ? 'fill-white' : ''}`} />
           </button>
         </div>
       </div>
