@@ -198,7 +198,7 @@ export default function PersonalSafetyTrackerPage() {
             <img
               src={blogPost.featuredImageUrl}
               alt={blogPost.title}
-              className="w-full h-64 md:h-96 lg:h-[500px] object-cover"
+              className="w-full h-64 md:h-96 lg:h-125 object-cover"
             />
           </div>
         </div>

@@ -144,8 +144,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Razorpay order creation error:', error);
-    
     return NextResponse.json(
       { 
         success: false, 

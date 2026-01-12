@@ -50,7 +50,6 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Get orders error:', error);
     return NextResponse.json(
       { success: false, message: error.message || 'Failed to fetch orders' },
       { status: 500 }

@@ -65,14 +65,12 @@ export default function ProductDetailPage() {
       
       if (data.success) {
         setProduct(data.data.product);
-        console.log('Related products from API:', data.data.relatedProducts);
         setRelatedProducts(data.data.relatedProducts || []);
         setError(null);
       } else {
         setError('Product not found');
       }
     } catch (error) {
-      console.error('Error fetching product:', error);
       setError('Failed to load product');
     } finally {
       setLoading(false);
@@ -137,7 +135,6 @@ export default function ProductDetailPage() {
         setIsInWishlist(isInList);
       }
     } catch (error) {
-      console.error('Error checking wishlist status:', error);
     }
   };
 
@@ -613,7 +610,7 @@ export default function ProductDetailPage() {
               <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
-          
+
           {relatedProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedProducts.map((item) => (

@@ -42,9 +42,7 @@ export async function GET(request: NextRequest) {
       }))
     });
 
-  } catch (error: any) {
-    console.error('Fetch orders error:', error);
-    
+  } catch (error: any) { 
     return NextResponse.json(
       { 
         success: false, 

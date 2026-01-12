@@ -32,7 +32,6 @@ export async function GET(
 
     return NextResponse.json(quote, { status: 200 });
   } catch (error) {
-    console.error('Error fetching quote:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -88,7 +87,6 @@ export async function PUT(
 
     return NextResponse.json(quote, { status: 200 });
   } catch (error) {
-    console.error('Error updating quote:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update quote' },
       { status: 500 }
@@ -127,7 +125,6 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error deleting quote:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete quote' },
       { status: 500 }

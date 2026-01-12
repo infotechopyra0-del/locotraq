@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
       try {
         await cloudinary.uploader.destroy(oldPublicId);
       } catch (error) {
-        console.error('Error deleting old image:', error);
       }
     }
     return NextResponse.json({
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
       message: 'Image uploaded successfully'
     });
   } catch (error) {
-    console.error('Error uploading image:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to upload image' },
       { status: 500 }

@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Wishlist DELETE Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to remove from wishlist', error: error.message },
       { status: 500 }
@@ -108,7 +107,6 @@ export async function DELETE(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Wishlist DELETE Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to remove item', error: error.message },
       { status: 500 }

@@ -328,7 +328,7 @@ export default function ContactPage() {
             {/* Map & Additional Info */}
             <div className="space-y-6">
               {/* Map */}
-              <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 h-[400px]">
+              <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 h-100">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14427.84435326069!2d82.99019007770996!3d25.267138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398e2db76febcf4d%3A0x68131710853ddd56!2sAIC%20BHU%2C%20Banaras%20Hindu%20University%2C%20Varanasi%2C%20Uttar%20Pradesh%20221005!5e0!3m2!1sen!2sin!4v1704655890123!5m2!1sen!2sin"
                   width="100%"

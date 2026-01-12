@@ -167,10 +167,10 @@ const categories = [
     { name: 'INDUSTRIAL SOLUTIONS', image: 'https://tiindia.com/wp-content/uploads/2021/09/cg-power-bg.jpg', link: '/shop?category=dresses' }
   ];
 export default function LocotraqHome() {
-  return <LocotraqHomeCore isSignedIn={false} user={null} />;
+  return <LocotraqHomeCore />;
 }
 
-function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any }) {
+function LocotraqHomeCore() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [cartCount, setCartCount] = useState(0);
@@ -204,8 +204,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -213,8 +211,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Hero slider auto-play
   useEffect(() => {
     if (!isAutoPlaying) return;
     const interval = setInterval(() => {
@@ -222,16 +218,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
     }, 5000);
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
-
-  // Fetch cart and wishlist counts
-  useEffect(() => {
-    if (isSignedIn) {
-      fetchCartCount();
-      fetchWishlistCount();
-    }
-  }, [isSignedIn]);
-
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -252,147 +238,55 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
     fetchProducts();
   }, []);
 
-  const fetchCartCount = async () => {
-    try {
-      const res = await fetch('/api/cart');
-      const data = await res.json();
-      if (data.success) {
-        setCartCount(data.cart?.length || 0);
-      }
-    } catch (error) {
-      // Handle error silently
-    }
-  };
-
-  const fetchWishlistCount = async () => {
-    try {
-      const res = await fetch('/api/wishlist');
-      const data = await res.json();
-      if (data.success) {
-        setWishlistCount(data.count || 0);
-      }
-    } catch (error) {
-    }
-  };
 
   const handleAddToCart = async (product: Product) => {
-    if (!isSignedIn) {
-      toast.error('Please login to add items to cart', {
-        description: 'You need to be logged in to add products to your cart',
-        action: {
-          label: 'Login',
-          onClick: () => window.location.href = '/auth/login'
-        }
-      });
-      return;
-    }
-
     try {
-      toast.loading('Adding to cart...', { id: 'add-to-cart' });
-
       const res = await fetch('/api/cart', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          productId: product.id,
-          product: {
-            productName: product.productName,
-            price: product.price,
-            productImage: product.productImage,
-          },
-          quantity: 1
-        })
+          productId: product.id || product._id,
+          quantity: 1,
+        }),
       });
 
       const data = await res.json();
-      
+
       if (data.success) {
-        setCartCount(data.cartCount);
-        toast.success('Product added to cart!', {
-          id: 'add-to-cart',
+        toast.success('Added to cart successfully!', {
           description: `${product.productName} has been added to your cart`,
+          duration: 3000,
           action: {
             label: 'View Cart',
-            onClick: () => window.location.href = '/cart'
+            onClick: () => window.location.href = '/profile/cart'
           }
         });
+        setCartCount(data.cartCount || 0);
       } else {
-        toast.error('Failed to add to cart', {
-          id: 'add-to-cart',
-          description: data.message || 'Something went wrong while adding to cart'
-        });
+        // Check if unauthorized (not logged in)
+        if (res.status === 401) {
+          toast.error('Please login to add items to cart', {
+            description: 'You need to be logged in to add products to your cart',
+            duration: 3000,
+            action: {
+              label: 'Login',
+              onClick: () => window.location.href = '/login'
+            }
+          });
+        } else {
+          toast.error('Failed to add to cart', {
+            description: data.message || 'Something went wrong',
+            duration: 3000
+          });
+        }
       }
     } catch (error) {
       toast.error('Failed to add to cart', {
-        id: 'add-to-cart',
-        description: 'Network error occurred. Please try again.'
-      });
-    }
-  };
-
-  const handleAddToWishlist = async (product: Product) => {
-    if (!isSignedIn) {
-      toast.error('Please login to add items to wishlist', {
-        description: 'You need to be logged in to add products to your wishlist',
-        action: {
-          label: 'Login',
-          onClick: () => window.location.href = '/auth/login'
-        }
-      });
-      return;
-    }
-
-    try {
-      toast.loading('Adding to wishlist...', { id: 'add-to-wishlist' });
-
-      const res = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: product.id,
-          product: {
-            productName: product.productName,
-            price: product.price,
-            productImage: product.productImage,
-          }
-        })
-      });
-
-      const data = await res.json();
-      
-      if (data.success) {
-        setWishlistCount(data.count);
-        toast.success('Added to wishlist!', {
-          id: 'add-to-wishlist',
-          description: `${product.productName} has been added to your wishlist`,
-          action: {
-            label: 'View Wishlist',
-            onClick: () => window.location.href = '/wishlist'
-          }
-        });
-      } else {
-        toast.error(data.message || 'Already in wishlist', {
-          id: 'add-to-wishlist',
-          description: 'This item might already be in your wishlist'
-        });
-      }
-    } catch (error) {
-      toast.error('Failed to add to wishlist', {
-        id: 'add-to-wishlist',
-        description: 'Network error occurred. Please try again.'
-      });
-    }
-  };
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      toast.success('Thank you for subscribing!', {
-        description: 'You will receive updates about our latest products and offers',
+        description: 'Please try again later',
         duration: 3000
       });
-      setEmail('');
-    } else {
-      toast.error('Please enter a valid email address');
     }
   };
 
@@ -417,8 +311,8 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      {/* Hero Slider */}
-      <section className="relative h-125 md:h-175 lg:h-175 overflow-hidden bg-linear-to-r from-orange-50 to-orange-100">
+      {/* Hero Section */}
+      <section className="relative h-125 sm:h-150 md:h-162.5 lg:h-175 overflow-hidden bg-linear-to-r from-orange-50 to-orange-100">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -432,45 +326,45 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
               }`}
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full py-12">
-                  <div className="space-y-6 z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center h-full py-8 sm:py-12">
+                  <div className="space-y-4 sm:space-y-6 z-10">
                     {slide.badge && (
-                      <div className="inline-block bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                      <div className="inline-block bg-orange-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold animate-pulse">
                         {slide.badge}
                       </div>
                     )}
-                    <div className="space-y-2">
-                      <h2 className="text-lg md:text-xl font-bold text-orange-600 uppercase tracking-wide">
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-orange-600 uppercase tracking-wide">
                         {slide.subtitle}
                       </h2>
-                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
+                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 leading-tight">
                         {slide.title}
                       </h1>
                     </div>
-                    <p className="text-lg md:text-xl text-gray-700 max-w-xl">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 max-w-xl">
                       {slide.description}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                      <Link
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+                      <a
                         href={slide.ctaLink}
-                        className="bg-orange-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-orange-700 transition-all transform hover:scale-105 flex items-center justify-center shadow-lg"
+                        className="bg-orange-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-orange-700 transition-all transform hover:scale-105 flex items-center justify-center shadow-lg text-sm sm:text-base"
                       >
                         {slide.cta}
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </Link>
+                        <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
                     </div>
-                    <div className="flex items-center space-x-8 pt-6">
+                    <div className="flex items-center space-x-4 sm:space-x-8 pt-4 sm:pt-6">
                       <div>
-                        <div className="text-3xl font-black text-orange-600">10k+</div>
-                        <div className="text-sm text-gray-600">Happy Customers</div>
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-black text-orange-600">10k+</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Happy Customers</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-black text-orange-600">99.9%</div>
-                        <div className="text-sm text-gray-600">Uptime</div>
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-black text-orange-600">99.9%</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Uptime</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-black text-orange-600">4.8★</div>
-                        <div className="text-sm text-gray-600">Rating</div>
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-black text-orange-600">4.8★</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Rating</div>
                       </div>
                     </div>
                   </div>
@@ -479,7 +373,7 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
                       <img
                         src={slide.image}
                         alt={slide.title}
-                        className="w-full h-125 object-cover"
+                        className="w-full h-100 lg:h-125 object-cover"
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
                     </div>
@@ -492,26 +386,26 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
 
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all hover:scale-110 z-20"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-3 rounded-full shadow-lg transition-all hover:scale-110 z-20"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-900" />
+          <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 text-gray-900" />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all hover:scale-110 z-20"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-3 rounded-full shadow-lg transition-all hover:scale-110 z-20"
         >
-          <ChevronRight className="w-6 h-6 text-gray-900" />
+          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-gray-900" />
         </button>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
+        <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               className={`transition-all duration-300 rounded-full ${
                 index === currentSlide
-                  ? 'bg-orange-600 w-12 h-3'
-                  : 'bg-white/70 hover:bg-white w-3 h-3'
+                  ? 'bg-orange-600 w-8 sm:w-12 h-2 sm:h-3'
+                  : 'bg-white/70 hover:bg-white w-2 sm:w-3 h-2 sm:h-3'
               }`}
             />
           ))}
@@ -542,38 +436,36 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
         </div>
       </section>
     {/* Shop by Categories - NEW SECTION */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 mb-2 sm:mb-4">
               Shop by Categories
             </h2>
-            <p className="text-gray-600">Find the perfect tracking solution for your needs</p>
+            <p className="text-sm sm:text-base text-gray-600">Find the perfect tracking solution for your needs</p>
           </div>
-          {/* Categories Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((category) => (
-            <Link
-              key={category.name}
-              href={category.link}
-              className="group relative aspect-3/4 overflow-hidden"
-            >
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0  bg-opacity-20 group-hover:bg-opacity-30 transition-all" />
-              <div className="absolute bottom-8 left-0 right-0 text-center">
-                <Button className="bg-white text-black px-6 py-2 text-sm tracking-wider hover:bg-gray-100 transition-colors">
-                  {category.name}
-                </Button>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+          
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {categories.map((category) => (
+              <a
+                key={category.name}
+                href={category.link}
+                className="group relative aspect-3/4 overflow-hidden rounded-lg"
+              >
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-opacity-20 group-hover:bg-opacity-30 transition-all" />
+                <div className="absolute bottom-3 sm:bottom-6 lg:bottom-8 left-0 right-0 text-center px-2">
+                  <button className="bg-white text-black px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm tracking-wider hover:bg-gray-100 transition-colors font-semibold rounded">
+                    {category.name}
+                  </button>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -659,13 +551,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
               </span>
             )}
 
-            <button
-              onClick={() => handleAddToWishlist(product)}
-              className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow hover:bg-orange-600 hover:text-white transition"
-            >
-              <Heart className="w-5 h-5" />
-            </button>
-
             {product.originalPrice > product.price && (
               <span className="absolute bottom-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                 {Math.round(
@@ -693,26 +578,6 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
             <p className="text-sm text-gray-600 mb-4 line-clamp-2">
               {product.shortDescription}
             </p>
-
-            {/* Rating */}
-            <div className="flex items-center mb-4">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < Math.floor(product.rating)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="ml-2 text-sm text-gray-600">
-                ({product.reviewCount})
-              </span>
-            </div>
-
             {/* Price */}
             <div className="mb-5">
               <span className="text-2xl font-black text-gray-900">

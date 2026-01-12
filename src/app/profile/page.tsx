@@ -73,7 +73,6 @@ export default function UserProfile() {
         setProfileImage(data.user.profileImage || '/images/UserDefaultImage.jpg');
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
     } finally {
       setLoading(false);
     }
@@ -87,7 +86,6 @@ export default function UserProfile() {
         setCartCount(data.cart?.length || 0);
       }
     } catch (error) {
-      console.error('Error fetching cart count:', error);
     }
   };
 
@@ -99,7 +97,6 @@ export default function UserProfile() {
         setWishlistCount(data.count || 0);
       }
     } catch (error) {
-      console.error('Error fetching wishlist count:', error);
     }
   };
 
@@ -146,8 +143,6 @@ export default function UserProfile() {
         if (typeof window !== 'undefined' && (window as any).refreshNavbarAuth) {
           (window as any).refreshNavbarAuth();
         }
-        
-        // Dispatch custom event for profile update
         window.dispatchEvent(new CustomEvent('profileUpdated', { detail: { imageUrl: data.imageUrl } }));
         
         toast.success('Profile picture updated successfully!');
@@ -155,7 +150,6 @@ export default function UserProfile() {
         toast.error(data.message || 'Failed to upload image');
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
       toast.error('Failed to upload image');
     } finally {
       setUploading(false);
@@ -178,7 +172,6 @@ export default function UserProfile() {
       const data = await response.json();
       return data.success;
     } catch (error) {
-      console.error('Error updating profile image:', error);
       return false;
     }
   };
@@ -237,7 +230,6 @@ export default function UserProfile() {
         toast.error(data.message || 'Failed to update profile');
       }
     } catch (error) {
-      console.error('Error saving profile:', error);
       toast.error('Failed to update profile');
     } finally {
       setSaving(false);

@@ -38,7 +38,6 @@ export async function PUT(
 
     return NextResponse.json(updatedOrder, { status: 200 });
   } catch (error) {
-    console.error('Error updating order:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update order' },
       { status: 500 }
@@ -78,7 +77,6 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error deleting order:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete order' },
       { status: 500 }

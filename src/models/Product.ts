@@ -9,8 +9,6 @@ export interface IProduct extends Document {
   originalPrice: number;
   category: string;
   subcategory: string;
-  rating: number;
-  reviewCount: number;
   productImage: string;
   images: string[];
   imageUrl: string;
@@ -97,23 +95,6 @@ const ProductSchema = new Schema<IProduct>({
     required: [true, 'Subcategory is required'],
     trim: true,
     index: true
-  },
-  rating: {
-    type: Number,
-    default: 0,
-    min: [0, 'Rating cannot be less than 0'],
-    max: [5, 'Rating cannot be more than 5'],
-    validate: {
-      validator: function(value: number) {
-        return value >= 0 && value <= 5;
-      },
-      message: 'Rating must be between 0 and 5'
-    }
-  },
-  reviewCount: {
-    type: Number,
-    default: 0,
-    min: [0, 'Review count cannot be negative']
   },
   productImage: {
     type: String,
@@ -266,7 +247,6 @@ const ProductSchema = new Schema<IProduct>({
 ProductSchema.index({ productName: 'text', description: 'text', tags: 'text' });
 ProductSchema.index({ category: 1, subcategory: 1 });
 ProductSchema.index({ price: 1 });
-ProductSchema.index({ rating: -1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ isFeatured: 1, isActive: 1 });
 ProductSchema.index({ inStock: 1, isActive: 1 });
@@ -291,10 +271,6 @@ ProductSchema.virtual('stockStatus').get(function(this: IProduct) {
   return 'In Stock';
 });
 
-// Average Rating Display
-ProductSchema.virtual('ratingDisplay').get(function(this: IProduct) {
-  return this.rating.toFixed(1);
-});
 
 ProductSchema.pre('save', function(this: IProduct) {
   if (this.isModified('productName') && !this.slug) {
@@ -343,16 +319,6 @@ ProductSchema.statics.findActive = function() {
   return this.find({ isActive: true, inStock: true });
 };
 
-ProductSchema.statics.findFeatured = function(limit = 6) {
-  return this.find({ isFeatured: true, isActive: true, inStock: true })
-    .sort({ rating: -1, salesCount: -1 })
-    .limit(limit);
-};
-
-ProductSchema.statics.findByCategory = function(category: string) {
-  return this.find({ category, isActive: true, inStock: true })
-    .sort({ rating: -1 });
-};
 
 ProductSchema.statics.search = function(query: string) {
   return this.find(
@@ -370,11 +336,6 @@ ProductSchema.statics.getBestSellers = function(limit = 10) {
     .limit(limit);
 };
 
-ProductSchema.statics.getTopRated = function(limit = 10) {
-  return this.find({ isActive: true, inStock: true, reviewCount: { $gte: 10 } })
-    .sort({ rating: -1, reviewCount: -1 })
-    .limit(limit);
-};
 
 // Get new arrivals
 ProductSchema.statics.getNewArrivals = function(limit = 10) {
@@ -410,7 +371,6 @@ ProductSchema.methods.incrementSales = function(quantity = 1) {
   return this.save();
 };
 
-// Decrease stock
 ProductSchema.methods.decreaseStock = function(quantity: number) {
   if (this.stockQuantity >= quantity) {
     this.stockQuantity -= quantity;
@@ -420,20 +380,12 @@ ProductSchema.methods.decreaseStock = function(quantity: number) {
   throw new Error('Insufficient stock');
 };
 
-// Increase stock
 ProductSchema.methods.increaseStock = function(quantity: number) {
   this.stockQuantity += quantity;
   this.inStock = true;
   return this.save();
 };
 
-// Update rating
-ProductSchema.methods.updateRating = function(newRating: number) {
-  const totalRating = this.rating * this.reviewCount;
-  this.reviewCount += 1;
-  this.rating = (totalRating + newRating) / this.reviewCount;
-  return this.save();
-};
 
 // Check if product is available
 ProductSchema.methods.isAvailable = function(requestedQuantity = 1) {
@@ -465,8 +417,6 @@ export interface IProductCreate {
   features: string[];
   specifications: { [key: string]: string };
   stockQuantity: number;
-  rating?: number;
-  reviewCount?: number;
   isFeatured?: boolean;
   isActive?: boolean;
   tags?: string[];
@@ -499,7 +449,6 @@ export interface IProductFilter {
   subcategory?: string;
   minPrice?: number;
   maxPrice?: number;
-  minRating?: number;
   inStock?: boolean;
   isFeatured?: boolean;
   search?: string;

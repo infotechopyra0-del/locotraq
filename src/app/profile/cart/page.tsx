@@ -44,21 +44,17 @@ const CartPage = () => {
   useEffect(() => {
     const checkAuthAndFetchCart = async () => {
       try {
-        // Check session/cookies
         const sessionResponse = await fetch('/api/auth/session');
         
         if (!sessionResponse.ok) {
-          console.error('Session fetch failed:', sessionResponse.statusText);
           setIsAuthenticated(false);
           setCartItems([]);
           setLoading(false);
           return;
         }
-        
-        // Check if response is JSON
+
         const contentType = sessionResponse.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-          console.error('Session API returned non-JSON response, likely redirected');
           setIsAuthenticated(false);
           setCartItems([]);
           setLoading(false);
@@ -66,35 +62,26 @@ const CartPage = () => {
         }
         
         const sessionData = await sessionResponse.json();
-        console.log('Session data:', sessionData);
         if (sessionData?.user?.email) {
           setIsAuthenticated(true);
           setUserEmail(sessionData.user.email);
-          // Fetch cart data from database for this user
           const cartResponse = await fetch(`/api/cart?email=${encodeURIComponent(sessionData.user.email)}`);
-          
           if (cartResponse.ok) {
             const contentType = cartResponse.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
               const cartData = await cartResponse.json();
-              console.log('Cart data from database:', cartData);
               setCartItems(cartData.items || []);
             } else {
-              console.warn('Cart API returned non-JSON response');
               setCartItems([]);
             }
           } else {
-            console.log('Cart API request failed:', cartResponse.status, cartResponse.statusText);
             setCartItems([]);
           }
         } else {
-          // User not authenticated - middleware should handle redirect
-          console.log('No session found, user will be redirected by middleware');
           setIsAuthenticated(false);
           setCartItems([]);
         }
       } catch (error) {
-        console.error('Error checking auth or fetching cart:', error);
         setIsAuthenticated(false);
         setCartItems([]);
       } finally {
@@ -104,8 +91,6 @@ const CartPage = () => {
 
     checkAuthAndFetchCart();
   }, []);
-
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <>

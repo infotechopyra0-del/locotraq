@@ -81,16 +81,10 @@ function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
         setFilteredProducts(data.data.products);
         setCategories(['all', ...data.data.categories]);
         setError(null);
-        console.log('Frontend Debug - Sample product:', data.data.products[0] ? {
-          id: data.data.products[0].id,
-          _id: data.data.products[0]._id,
-          productName: data.data.products[0].productName
-        } : 'No products found');
       } else {
         setError('Failed to fetch products');
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
       setError('Failed to load products');
     } finally {
       setLoading(false);

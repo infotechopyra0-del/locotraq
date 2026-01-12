@@ -31,24 +31,16 @@ function LoginForm() {
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      console.log('✅ User authenticated with role:', session.user.role);
-      
       const callbackUrl = searchParams.get('callbackUrl');
-      
       if (session.user.role === 'admin') {
-        console.log('👑 Admin user detected, redirecting to dashboard');
         router.push('/admin/dashboard');
       } else if (callbackUrl && callbackUrl !== '/auth/login') {
-        console.log('🔗 Redirecting to callback URL:', callbackUrl);
         router.push(callbackUrl);
       } else {
-        console.log('🏠 Redirecting to home page');
         router.push('/');
       }
     }
   }, [session, status, router, searchParams]);
-
-  // Handle OAuth callback errors
   useEffect(() => {
     const error = searchParams.get('error');
     if (error) {
@@ -80,17 +72,12 @@ function LoginForm() {
     try {
       const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
       const data = await response.json();
-      
-      // Handle service unavailable gracefully
       if (response.status === 503) {
-        console.warn('Email check service unavailable:', data.message);
-        return false; // Allow registration to proceed
+        return false;
       }
-      
       return data.exists;
     } catch (err) {
-      console.error('Error checking email:', err);
-      return false; // Allow registration to proceed if API fails
+      return false;
     }
   };
 
@@ -116,42 +103,28 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
     if (!isValidEmail(loginData.email)) {
       setError('Please enter a valid email address');
       setLoading(false);
       return;
     }
-
     try {
-      console.log('🔐 Attempting login for:', loginData.email);
-      
       const result = await signIn('credentials', {
         email: loginData.email,
         password: loginData.password,
         redirect: false,
       });
-
-      console.log('🔑 Login result:', result);
-
       if (result?.error) {
-        console.log('❌ Login error:', result.error);
         setError(result.error);
         setLoading(false);
         return;
       }
-
       if (result?.ok) {
-        console.log('✅ Login successful, waiting for session...');
-        
-        // Wait a moment for the session to be established
         setTimeout(() => {
-          // Force page reload to ensure session is properly loaded
           window.location.reload();
         }, 500);
       }
     } catch (err: any) {
-      console.error('Login error:', err);
       setError('Login failed. Please try again.');
       setLoading(false);
     }
@@ -359,7 +332,7 @@ function LoginForm() {
             {/* Error Message */}
             {error && (
               <div className="mb-4 p-4 bg-red-500/10 border border-red-500/50 rounded-xl flex items-start backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-300">
-                <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 shrink-0" />
                 <p className="text-red-400 text-xs md:text-sm flex-1">{error}</p>
                 <button
                   onClick={() => setError('')}
@@ -373,7 +346,7 @@ function LoginForm() {
             {/* Success Message */}
             {success && (
               <div className="mb-4 p-4 bg-green-500/10 border border-green-500/50 rounded-xl flex items-start backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-300">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 shrink-0" />
                 <p className="text-green-400 text-xs md:text-sm flex-1">{success}</p>
                 <button
                   onClick={() => setSuccess('')}
@@ -547,7 +520,7 @@ function LoginForm() {
                   <input
                     type="checkbox"
                     required
-                    className="w-4 h-4 mt-1 text-orange-500 bg-gray-900 border-gray-700 rounded focus:ring-orange-500 focus:ring-2 flex-shrink-0"
+                    className="w-4 h-4 mt-1 text-orange-500 bg-gray-900 border-gray-700 rounded focus:ring-orange-500 focus:ring-2 shrink-0"
                   />
                   <span className="ml-2 text-gray-400 group-hover:text-gray-300 transition-colors">
                     I agree to the{' '}

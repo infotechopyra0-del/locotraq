@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Share Wishlist Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to generate share link', error: error.message },
       { status: 500 }

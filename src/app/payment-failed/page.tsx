@@ -28,14 +28,12 @@ function PaymentFailedContent() {
         router.push('/products');
       }
     } catch (error) {
-      console.error('Retry payment error:', error);
     } finally {
       setRetrying(false);
     }
   };
 
   const handleContactSupport = () => {
-    // In a real implementation, open support chat or redirect to support page
     router.push('/support');
   };
 

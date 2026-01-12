@@ -96,9 +96,7 @@ export async function POST(req: NextRequest) {
         description: promo.description
       }
     });
-
   } catch (error: any) {
-    console.error('Promo Code Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to apply promo code', error: error.message },
       { status: 500 }

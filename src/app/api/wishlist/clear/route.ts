@@ -37,7 +37,6 @@ export async function DELETE(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Wishlist CLEAR Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to clear wishlist', error: error.message },
       { status: 500 }

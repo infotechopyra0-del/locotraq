@@ -85,7 +85,6 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Wishlist GET Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to fetch wishlist', error: error.message },
       { status: 500 }
@@ -156,7 +155,6 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Wishlist POST Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to add to wishlist', error: error.message },
       { status: 500 }

@@ -58,11 +58,6 @@ export async function POST(request: NextRequest) {
     const isValidSignature = expectedSignature === razorpay_signature;
 
     if (!isValidSignature) {
-      console.error('Payment signature verification failed:', {
-        expected: expectedSignature,
-        received: razorpay_signature,
-        orderId: razorpay_order_id
-      });
       return NextResponse.json(
         { success: false, message: 'Payment verification failed' },
         { status: 400 }
@@ -90,18 +85,7 @@ export async function POST(request: NextRequest) {
     order.razorpayPaymentId = razorpay_payment_id;
     order.razorpaySignature = razorpay_signature;
     order.paidAt = new Date();
-
     await order.save();
-
-    // Log successful payment for monitoring
-    console.log('Payment verified successfully:', {
-      orderId: order._id,
-      orderNumber: order.orderNumber,
-      userId: user._id,
-      amount: order.total,
-      paymentId: razorpay_payment_id
-    });
-
     return NextResponse.json({
       success: true,
       message: 'Payment verified successfully',
@@ -116,9 +100,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Payment verification error:', error);
-    
-    // If order exists, mark payment as failed
     if (error.orderData?._id) {
       try {
         await dbConnect();
@@ -127,7 +108,6 @@ export async function POST(request: NextRequest) {
           status: 'pending'
         });
       } catch (updateError) {
-        console.error('Failed to update order status:', updateError);
       }
     }
     

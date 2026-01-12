@@ -21,7 +21,6 @@ export async function PUT(
     if (body.password) {
       delete body.password;
     }
-
     const user = await User.findByIdAndUpdate(
       id,
       body,
@@ -37,7 +36,6 @@ export async function PUT(
       message: "User updated successfully",
     });
   } catch (error: any) {
-    console.error("Error updating user:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update user" },
       { status: 500 }
@@ -60,15 +58,12 @@ export async function DELETE(
         { status: 404 }
       );
     }
-
     await User.findByIdAndDelete(id);
-
     return NextResponse.json({
       success: true,
       message: "User deleted successfully",
     });
   } catch (error: any) {
-    console.error("Error deleting user:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to delete user" },
       { status: 500 }

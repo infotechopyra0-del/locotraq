@@ -130,12 +130,10 @@ function CheckoutForm() {
         });
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
     }
   };
 
   const fetchProductData = () => {
-    // Get product info from URL params or localStorage
     const productId = searchParams.get('productId');
     const productName = searchParams.get('name');
     const productPrice = parseFloat(searchParams.get('price') || '0');
@@ -277,7 +275,6 @@ function CheckoutForm() {
               throw new Error('Payment verification failed');
             }
           } catch (error) {
-            console.error('Payment verification error:', error);
             router.push('/payment-failed');
           }
         },

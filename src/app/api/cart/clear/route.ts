@@ -39,7 +39,6 @@ export async function DELETE(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Cart CLEAR Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to clear cart', error: error.message },
       { status: 500 }

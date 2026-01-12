@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error fetching profile:', error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
@@ -113,7 +112,6 @@ export async function PUT(request: NextRequest) {
       user: updatedUser
     });
   } catch (error) {
-    console.error('Error updating profile:', error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

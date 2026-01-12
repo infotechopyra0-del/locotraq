@@ -1,3 +1,4 @@
+// app/api/cart/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -5,12 +6,12 @@ import dbConnect from '@/lib/mongodb';
 import Cart from '@/models/Cart';
 import Product from '@/models/Product';
 
+// GET - Fetch Cart
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const emailParam = req.nextUrl.searchParams.get('email');
     
-    // Check if user is authenticated via session OR email param
     const userEmail = session?.user?.email || emailParam;
     
     if (!userEmail) {
@@ -22,7 +23,6 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
 
-    // Find cart by email instead of userId
     const cart = await Cart.findOne({ userEmail: userEmail })
       .populate({
         path: 'items.productId',
@@ -36,7 +36,8 @@ export async function GET(req: NextRequest) {
         cart: null,
         items: [],
         totalAmount: 0,
-        totalItems: 0
+        totalItems: 0,
+        cartCount: 0
       });
     }
 
@@ -46,7 +47,6 @@ export async function GET(req: NextRequest) {
       item.productId.stockQuantity > 0
     );
 
-    // Format cart items with product details
     const formattedItems = validItems.map((item: any) => ({
       _id: item._id,
       productId: item.productId._id,
@@ -78,7 +78,6 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Cart GET Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to fetch cart', error: error.message },
       { status: 500 }
@@ -107,19 +106,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
     await dbConnect();
-
-    // Verify product exists and is available
-    const product = await Product.findById(productId);
-    
+    const product = await Product.findById(productId).lean();
     if (!product) {
       return NextResponse.json(
         { success: false, message: 'Product not found' },
         { status: 404 }
       );
     }
-
     if (!product.isActive) {
       return NextResponse.json(
         { success: false, message: 'Product is not available' },
@@ -133,8 +127,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Find or create cart using userEmail instead of userId
     let cart = await Cart.findOne({ userEmail: session.user.email });
 
     if (!cart) {
@@ -147,11 +139,10 @@ export async function POST(req: NextRequest) {
 
     // Check if product already in cart
     const existingItemIndex = cart.items.findIndex(
-      item => item.productId.toString() === productId
+      (item: any) => item.productId.toString() === productId
     );
 
     if (existingItemIndex > -1) {
-      // Update quantity
       const newQuantity = cart.items[existingItemIndex].quantity + quantity;
       
       if (newQuantity > product.stockQuantity) {
@@ -164,7 +155,6 @@ export async function POST(req: NextRequest) {
       cart.items[existingItemIndex].quantity = newQuantity;
       cart.items[existingItemIndex].price = product.price;
     } else {
-      // Add new item
       cart.items.push({
         productId: product._id,
         quantity,
@@ -173,26 +163,158 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Calculate totals before saving
+    cart.totalItems = cart.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    cart.totalAmount = cart.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+
+    // Save cart WITHOUT populating (to avoid triggering Product model hooks)
     await cart.save();
 
-    // Populate and return updated cart
-    await cart.populate({
-      path: 'items.productId',
-      select: 'productName price originalPrice productImage category stockQuantity'
-    });
-
+    // Return response WITHOUT populated data
     return NextResponse.json({
       success: true,
       message: 'Product added to cart successfully',
-      cart,
+      cartCount: cart.items.length,
+      totalItems: cart.totalItems,
+      totalAmount: cart.totalAmount
+    });
+
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: 'Failed to add to cart', error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Remove from Cart
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    const productId = searchParams.get('productId');
+
+    await dbConnect();
+
+    const cart = await Cart.findOne({ userEmail: session.user.email });
+
+    if (!cart) {
+      return NextResponse.json(
+        { success: false, message: 'Cart not found' },
+        { status: 404 }
+      );
+    }
+
+    if (productId) {
+      cart.items = cart.items.filter(
+        (item: any) => item.productId.toString() !== productId
+      );
+    } else {
+      cart.items = [];
+    }
+
+    cart.totalItems = cart.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    cart.totalAmount = cart.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+
+    await cart.save();
+
+    return NextResponse.json({
+      success: true,
+      message: productId ? 'Item removed from cart' : 'Cart cleared',
       cartCount: cart.items.length,
       totalItems: cart.totalItems
     });
 
   } catch (error: any) {
-    console.error('Cart POST Error:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to add to cart', error: error.message },
+      { success: false, message: 'Failed to remove from cart', error: error.message },
+      { status: 500 }
+    );
+  }
+}
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const { productId, quantity } = body;
+
+    if (!productId || quantity < 1) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+
+    await dbConnect();
+
+    const product = await Product.findById(productId).lean();
+    
+    if (!product) {
+      return NextResponse.json(
+        { success: false, message: 'Product not found' },
+        { status: 404 }
+      );
+    }
+
+    if (quantity > product.stockQuantity) {
+      return NextResponse.json(
+        { success: false, message: 'Insufficient stock' },
+        { status: 400 }
+      );
+    }
+
+    const cart = await Cart.findOne({ userEmail: session.user.email });
+
+    if (!cart) {
+      return NextResponse.json(
+        { success: false, message: 'Cart not found' },
+        { status: 404 }
+      );
+    }
+
+    const itemIndex = cart.items.findIndex(
+      (item: any) => item.productId.toString() === productId
+    );
+
+    if (itemIndex === -1) {
+      return NextResponse.json(
+        { success: false, message: 'Item not found in cart' },
+        { status: 404 }
+      );
+    }
+
+    cart.items[itemIndex].quantity = quantity;
+    cart.totalItems = cart.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    cart.totalAmount = cart.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+
+    await cart.save();
+
+    return NextResponse.json({
+      success: true,
+      message: 'Cart updated successfully',
+      cartCount: cart.items.length,
+      totalItems: cart.totalItems
+    });
+
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: 'Failed to update cart', error: error.message },
       { status: 500 }
     );
   }

@@ -43,7 +43,6 @@ export async function PUT(request: NextRequest) {
       message: 'Profile image updated successfully'
     });
   } catch (error) {
-    console.error('Error updating profile image:', error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

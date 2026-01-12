@@ -66,7 +66,6 @@ export async function POST(req: NextRequest) {
     );
 
   } catch (error: any) {
-    console.error('Registration error:', error);
     
     // Handle specific MongoDB connection errors
     if (error.name === 'MongooseServerSelectionError' || 

@@ -104,7 +104,6 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Move to Cart Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to move item to cart', error: error.message },
       { status: 500 }

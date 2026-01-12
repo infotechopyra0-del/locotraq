@@ -62,21 +62,11 @@ export async function GET(request: Request) {
         .lean(),
       Product.countDocuments(query)
     ]);
-
-    // Transform _id to id for frontend compatibility
     const transformedProducts = products.map(product => ({
       ...product,
       id: product._id.toString(),
       _id: product._id.toString()
     }));
-
-    console.log('API Debug - Sample product:', transformedProducts[0] ? {
-      id: transformedProducts[0].id,
-      _id: transformedProducts[0]._id,
-      productName: transformedProducts[0].productName
-    } : 'No products found');
-
-    // Get categories for filter
     const categories = await Product.distinct('category', { isActive: true });
 
     return NextResponse.json({
@@ -92,7 +82,6 @@ export async function GET(request: Request) {
     });
 
   } catch (error) {
-    console.error('Error fetching products:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch products' },
       { status: 500 }

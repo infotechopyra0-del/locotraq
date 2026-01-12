@@ -19,22 +19,16 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-
     const formData = await req.formData();
     const file = formData.get('image') as File;
-
     if (!file) {
       return NextResponse.json(
         { success: false, error: 'No image file provided' },
         { status: 400 }
       );
     }
-
-    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Upload to Cloudinary
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -66,14 +60,12 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to upload image' },
       { status: 500 }
     );
   }
 }
-
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -109,7 +101,6 @@ export async function DELETE(req: NextRequest) {
       { status: 500 }
     );
   } catch (error) {
-    console.error('Error deleting from Cloudinary:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete image' },
       { status: 500 }

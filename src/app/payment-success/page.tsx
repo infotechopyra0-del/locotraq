@@ -68,7 +68,6 @@ function PaymentSuccessContent() {
         setOrder(data.order);
       }
     } catch (error) {
-      console.error('Error fetching order:', error);
     } finally {
       setLoading(false);
     }

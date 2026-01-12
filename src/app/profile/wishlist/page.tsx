@@ -103,7 +103,6 @@ const DynamicWishlistPage = () => {
         toast.error(data.message || 'Failed to remove item');
       }
     } catch (err) {
-      console.error('Remove error:', err);
       toast.error('Failed to remove item');
     } finally {
       setProcessing(null);
@@ -130,7 +129,6 @@ const DynamicWishlistPage = () => {
         toast.error(data.message || 'Failed to move item');
       }
     } catch (err) {
-      console.error('Move to cart error:', err);
       toast.error('Failed to move item to cart');
     } finally {
       setProcessing(null);
@@ -157,7 +155,6 @@ const DynamicWishlistPage = () => {
         toast.error(data.message || 'Failed to clear wishlist');
       }
     } catch (err) {
-      console.error('Clear wishlist error:', err);
       toast.error('Failed to clear wishlist');
     } finally {
       setRefreshing(false);
@@ -179,7 +176,6 @@ const DynamicWishlistPage = () => {
         toast.error(data.message || 'Failed to generate share link');
       }
     } catch (err) {
-      console.error('Share error:', err);
       toast.error('Failed to share wishlist');
     }
   };

@@ -6,13 +6,11 @@ export async function GET() {
   try {
     await dbConnect();
     const users = await User.find({}).select('-password').sort({ createdAt: -1 });
-    
     return NextResponse.json({
       success: true,
       data: users
     });
   } catch (error: any) {
-    console.error("Error fetching users:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
       { status: 500 }
@@ -42,7 +40,6 @@ export async function POST(req: NextRequest) {
       message: "User created successfully"
     }, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating user:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to create user" },
       { status: 500 }

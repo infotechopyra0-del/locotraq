@@ -267,7 +267,7 @@ export default function Navbar({
                 alt="Locotraq Logo"
                 width={100}
                 height={60}
-                style={{ height: 'auto' }}
+                style={{ width: 'auto', height: 'auto' }}
                 priority
                 className="object-contain"
               />
@@ -462,26 +462,6 @@ export default function Navbar({
                     {item.name}
                   </Link>
                 ))}
-                {userData.role === 'admin' && (
-                  <Link
-                    href="/admin/dashboard"
-                    onClick={() => setMobileMenu(false)}
-                    className="flex items-center gap-3 py-2 font-medium text-orange-600"
-                  >
-                    <Settings size={18} />
-                    Admin Dashboard
-                  </Link>
-                )}
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setMobileMenu(false);
-                  }}
-                  className="flex items-center gap-3 py-2 font-medium text-red-600 w-full"
-                >
-                  <LogOut size={18} />
-                  Logout
-                </button>
               </div>
             ) : (
               <Link

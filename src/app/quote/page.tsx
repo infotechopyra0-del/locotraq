@@ -93,7 +93,6 @@ export default function GetQuotePage() {
         setResult("Error submitting quote request. Please try again.");
       }
     } catch (error) {
-      console.error('Quote submission error:', error);
       setResult("Error submitting quote request. Please try again.");
     }
   };

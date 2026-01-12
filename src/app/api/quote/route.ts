@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error saving quote:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to save quote request' },
       { status: 500 }

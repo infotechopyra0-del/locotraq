@@ -82,7 +82,6 @@ export async function PUT(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Cart UPDATE Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to update cart', error: error.message },
       { status: 500 }

@@ -57,7 +57,6 @@ export async function DELETE(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Cart DELETE Error:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to remove item', error: error.message },
       { status: 500 }

@@ -78,7 +78,6 @@ function MyOrdersContent() {
       }
     } catch (error: any) {
       setError('Failed to fetch orders');
-      console.error('Orders fetch error:', error);
     } finally {
       setLoading(false);
     }

@@ -59,7 +59,6 @@ export async function PUT(
     });
 
   } catch (error: any) {
-    console.error('Cancel order error:', error);
     return NextResponse.json(
       { success: false, message: error.message || 'Failed to cancel order' },
       { status: 500 }
