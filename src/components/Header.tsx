@@ -155,7 +155,6 @@ export default function Navbar({
     }
   };
 
-  // Search handler
   const handleSearch = async (value: string) => {
     setQuery(value);
     if (!value.trim()) return;
@@ -391,7 +390,7 @@ export default function Navbar({
               )}
 
               {/* Cart */}
-              <Link href="/cart" className="relative hover:text-orange-600 transition-colors">
+              <Link href="/profile/cart" className="relative hover:text-orange-600 transition-colors">
                 <ShoppingCart />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -401,7 +400,7 @@ export default function Navbar({
               </Link>
 
               {/* Wishlist */}
-              <Link href="/wishlist" className="relative hover:text-orange-600 transition-colors">
+              <Link href="/profile/wishlist" className="relative hover:text-orange-600 transition-colors">
                 <Heart />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">

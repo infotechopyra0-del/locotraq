@@ -102,7 +102,6 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     fetchOrders();
   }, []);
-
   const fetchOrders = async (opts: { forceToast?: boolean } = {}) => {
     setLoading(true);
     try {
@@ -115,7 +114,6 @@ export default function AdminOrdersPage() {
         cache: "no-store",
         credentials: "include",
       });
-
       if (!response.ok) {
         if (response.status === 401) {
           window.location.href = "/auth/login";
@@ -123,16 +121,13 @@ export default function AdminOrdersPage() {
         }
         throw new Error("Failed to fetch orders");
       }
-
       const response_data = await response.json();
       const orders_array = response_data.data || response_data;
       setOrders(orders_array);
-
       if (!loadToastShownRef.current || opts.forceToast) {
         loadToastShownRef.current = true;
       }
     } catch (error) {
-      console.error("Error fetching orders:", error);
     } finally {
       setLoading(false);
     }
@@ -180,7 +175,6 @@ export default function AdminOrdersPage() {
         prev.filter((o) => (o.id ?? o._id) !== orderToDelete)
       );
     } catch (error) {
-      console.error("Error deleting order:", error);
     } finally {
       setDeleteDialogOpen(false);
       setOrderToDelete(null);
@@ -200,21 +194,16 @@ export default function AdminOrdersPage() {
         },
         body: JSON.stringify({ status: newStatus }),
       });
-
       if (response.status === 401) {
         window.location.href = "/auth/login";
         return;
       }
-
       if (!response.ok) throw new Error("Failed to update");
-
       const updatedOrder = await response.json();
-
       setOrders((prev) =>
         prev.map((o) => ((o.id ?? o._id) === id ? updatedOrder : o))
       );
     } catch (error) {
-      console.error("Error updating order:", error);
     }
   };
 
@@ -235,7 +224,6 @@ export default function AdminOrdersPage() {
         return "bg-yellow-100 text-yellow-700";
     }
   };
-
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
       case "paid":
@@ -266,7 +254,6 @@ export default function AdminOrdersPage() {
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
-
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-amber-100 overflow-hidden">
       {/* Fixed Header */}

@@ -30,10 +30,23 @@ function LoginForm() {
   });
 
   useEffect(() => {
-    if (status === 'authenticated' && session) {
-      router.push('/');
+    if (status === 'authenticated' && session?.user) {
+      console.log('✅ User authenticated with role:', session.user.role);
+      
+      const callbackUrl = searchParams.get('callbackUrl');
+      
+      if (session.user.role === 'admin') {
+        console.log('👑 Admin user detected, redirecting to dashboard');
+        router.push('/admin/dashboard');
+      } else if (callbackUrl && callbackUrl !== '/auth/login') {
+        console.log('🔗 Redirecting to callback URL:', callbackUrl);
+        router.push(callbackUrl);
+      } else {
+        console.log('🏠 Redirecting to home page');
+        router.push('/');
+      }
     }
-  }, [session, status, router]);
+  }, [session, status, router, searchParams]);
 
   // Handle OAuth callback errors
   useEffect(() => {
@@ -111,31 +124,31 @@ function LoginForm() {
     }
 
     try {
-      const callbackUrl = searchParams.get('callbackUrl') || '/';
+      console.log('🔐 Attempting login for:', loginData.email);
       
       const result = await signIn('credentials', {
         email: loginData.email,
         password: loginData.password,
         redirect: false,
-        callbackUrl: callbackUrl
       });
 
+      console.log('🔑 Login result:', result);
+
       if (result?.error) {
+        console.log('❌ Login error:', result.error);
         setError(result.error);
         setLoading(false);
         return;
       }
 
       if (result?.ok) {
-        // Check user role after successful login
-        const sessionResponse = await fetch('/api/auth/session');
-        const session = await sessionResponse.json();
-
-        if (session?.user?.role === 'admin') {
-          router.push('/admin/dashboard');
-        } else {
-          router.push(callbackUrl);
-        }
+        console.log('✅ Login successful, waiting for session...');
+        
+        // Wait a moment for the session to be established
+        setTimeout(() => {
+          // Force page reload to ensure session is properly loaded
+          window.location.reload();
+        }, 500);
       }
     } catch (err: any) {
       console.error('Login error:', err);

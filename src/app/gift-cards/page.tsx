@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
@@ -100,18 +101,18 @@ export default function GiftCardsPage() {
 
   const handlePurchase = async () => {
     if (!selectedAmount || !recipientEmail || !recipientName || !senderName) {
-      alert('Please fill all required fields');
+      toast.error('Please fill all required fields');
       return;
     }
 
     if (selectedAmount < 500) {
-      alert('Minimum gift card amount is ₹500');
+      toast.error('Minimum gift card amount is ₹500');
       return;
     }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert('Gift card purchased successfully! Check your email for details.');
+      toast.success('Gift card purchased successfully! Check your email for details.');
     }, 2000);
   };
 

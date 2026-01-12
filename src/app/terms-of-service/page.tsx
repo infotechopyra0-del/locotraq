@@ -2,10 +2,13 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, FileText, Shield, AlertTriangle, Users, Gavel } from 'lucide-react';
+import Navbar from '@/components/Header';
 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Navbar */}
+      <Navbar />
       {/* Header Section */}
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">

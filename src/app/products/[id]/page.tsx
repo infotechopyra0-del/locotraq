@@ -12,46 +12,76 @@ import {
   Sparkles, MessageCircle, Info, AlertCircle, Gift, Percent
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/Header';
 import Footer from '@/components/Footer';
-import { products, GPSProducts } from '@/lib/products';
 
-const getRelatedProducts = () => {
-  const productList = products();
-  return productList
-    .filter(p => p.isFeatured)
-    .map(p => ({
-      id: p.id,
-      name: p.productName,
-      price: p.price,
-      originalPrice: p.originalPrice,
-      image: p.productImage,
-      rating: p.rating
-    }));
-};
+interface GPSProduct {
+  id: string;
+  _id?: string;
+  productName?: string;
+  name?: string;
+  description?: string;
+  shortDescription?: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  subcategory?: string;
+  rating?: number;
+  reviewCount?: number;
+  productImage?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  images?: string[];
+  features?: string[];
+  isFeatured?: boolean;
+  inStock?: boolean;
+  specifications?: { [key: string]: string };
+  isActive?: boolean;
+  stockQuantity?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 export default function ProductDetailPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const params = useParams();
-  const [product, setProduct] = useState<GPSProducts | null>(null);
+  const [product, setProduct] = useState<GPSProduct | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<GPSProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [isInWishlist, setIsInWishlist] = useState(false);
 
-  useEffect(() => {
-    // Get product by ID from static products
-    const productId = params.id as string;
-    const productList = products();
-    const foundProduct = productList.find(p => p.id === productId);
-    
-    if (foundProduct) {
-      setProduct(foundProduct);
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      const productId = params.id as string;
+      
+      const response = await fetch(`/api/products/${productId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setProduct(data.data.product);
+        console.log('Related products from API:', data.data.relatedProducts);
+        setRelatedProducts(data.data.relatedProducts || []);
+        setError(null);
+      } else {
+        setError('Product not found');
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      setError('Failed to load product');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  // Move all useEffect hooks to the top before any conditional returns
+  useEffect(() => {
+    fetchProduct();
   }, [params.id]);
 
   useEffect(() => {
@@ -60,6 +90,43 @@ export default function ProductDetailPage() {
       checkWishlistStatus();
     }
   }, [product, session]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading product...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+            <p className="text-gray-600 mb-6">{error || 'The product you are looking for does not exist.'}</p>
+            <Link 
+              href="/products"
+              className="bg-orange-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-700 transition-colors"
+            >
+              Back to Products
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   const checkWishlistStatus = async () => {
     try {
@@ -111,12 +178,11 @@ export default function ProductDetailPage() {
   }
 
   const handleBuyNow = () => {
-    const checkoutUrl = `/checkout?productId=${product.id}&name=${encodeURIComponent(product.productName)}&price=${product.price}&image=${encodeURIComponent(product.productImage)}&quantity=${quantity}`;
+    const checkoutUrl = `/checkout?productId=${product.id}&name=${encodeURIComponent(product.productName || product.name || 'GPS Tracker')}&price=${product.price}&image=${encodeURIComponent(product.productImage || product.imageUrl || '')}&quantity=${quantity}`;
     router.push(checkoutUrl);
   };
 
   const handleWishlist = async () => {
-    // Check if user is authenticated
     if (!session) {
       toast.error('Please login first', {
         description: 'You need to be logged in to add items to wishlist',
@@ -136,9 +202,9 @@ export default function ProductDetailPage() {
           },
           body: JSON.stringify({
             productId: product.id,
-            productName: product.productName,
+            productName: product.productName || product.name || 'GPS Tracker',
             price: product.price,
-            image: product.productImage,
+            image: product.productImage || product.imageUrl || '',
           }),
         });
 
@@ -190,9 +256,10 @@ export default function ProductDetailPage() {
   };
 
   const handleShare = async () => {
+    const productTitle = product.productName || product.name || 'GPS Tracker';
     const shareData = {
-      title: product.productName,
-      text: `Check out this ${product.productName} - ₹${product.price.toLocaleString('en-IN')}`,
+      title: productTitle,
+      text: `Check out this ${productTitle} - ₹${product.price.toLocaleString('en-IN')}`,
       url: window.location.href
     };
 
@@ -241,8 +308,8 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <div className="relative aspect-square bg-white rounded-2xl overflow-hidden shadow-xl border-4 border-orange-100">
               <img
-                src={product.images?.[selectedImage] || product.productImage}
-                alt={product.productName}
+                src={product.images?.[selectedImage] || product.productImage || product.imageUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop'}
+                alt={product.productName || product.name || 'GPS Tracker'}
                 className="w-full h-full object-cover"
               />
               
@@ -335,36 +402,15 @@ export default function ProductDetailPage() {
                 </span>
               )}
             </div>
-
             {/* Title */}
             <div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-3">
-                {product.productName}
+                {product.productName || product.name || 'GPS Tracker'}
               </h1>
               <p className="text-lg text-gray-600 font-medium">
-                {product.shortDescription}
+                {product.shortDescription || 'Premium GPS tracking device'}
               </p>
             </div>
-
-            {/* Rating */}
-            <div className="flex items-center space-x-4 pb-4 border-b-2 border-gray-100">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < Math.floor(product.rating)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm font-bold text-gray-900">
-                {product.rating} ({product.reviewCount} reviews)
-              </span>
-            </div>
-
             {/* Price */}
             <div className="bg-linear-to-r from-orange-50 to-orange-100 rounded-2xl p-6 border-2 border-orange-200">
               <div className="flex items-baseline gap-3 mb-2">
@@ -517,7 +563,7 @@ export default function ProductDetailPage() {
                   className="prose max-w-none"
                 >
                   <p className="text-gray-700 leading-relaxed text-lg">
-                    {product.description}
+                    {product.description || product.shortDescription || 'No description available'}
                   </p>
                 </motion.div>
               )}
@@ -528,7 +574,7 @@ export default function ProductDetailPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 >
-                  {product.features.map((feature, i) => (
+                  {(product.features || []).map((feature, i) => (
                     <div key={i} className="flex items-center space-x-3 bg-orange-50 p-4 rounded-xl border-2 border-orange-100">
                       <Check className="w-5 h-5 text-orange-600 shrink-0" />
                       <span className="text-gray-900 font-semibold">{feature}</span>
@@ -560,61 +606,64 @@ export default function ProductDetailPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-black text-gray-900 flex items-center">
               <TrendingUp className="w-8 h-8 mr-3 text-orange-600" />
-              Related Products
+              {relatedProducts.length > 0 ? 'Related Products' : 'Suggested Products'}
             </h2>
             <Link href="/products" className="text-orange-600 font-bold hover:text-orange-700 flex items-center">
               View All
               <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {getRelatedProducts().map((item) => (
-              <Link key={item.id} href={`/products/${item.id}`}>
-                <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden group">
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {item.originalPrice && (
-                      <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1 group-hover:text-orange-600 transition-colors">
-                      {item.name}
-                    </h3>
-                    <div className="flex items-center mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(item.rating)
-                              ? 'text-yellow-400 fill-yellow-400'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-gray-900">
-                        ₹{item.price.toLocaleString('en-IN')}
-                      </span>
-                      {item.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ₹{item.originalPrice.toLocaleString('en-IN')}
-                        </span>
+          
+          {relatedProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedProducts.map((item) => (
+                <Link key={item.id} href={`/products/${item.id}`}>
+                  <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden group">
+                    <div className="relative aspect-square overflow-hidden">
+                      <img
+                        src={item.productImage || item.imageUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop'}
+                        alt={item.productName || item.name || 'GPS Tracker'}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      {item.originalPrice && item.originalPrice > item.price && (
+                        <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                          {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
+                        </div>
                       )}
                     </div>
+                    <div className="p-5">
+                      <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1 group-hover:text-orange-600 transition-colors">
+                        {item.productName || item.name}
+                      </h3>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black text-gray-900">
+                          ₹{item.price.toLocaleString('en-IN')}
+                        </span>
+                        {item.originalPrice && item.originalPrice > item.price && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ₹{item.originalPrice.toLocaleString('en-IN')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Related Products</h3>
+              <p className="text-gray-600 mb-6">Check out our full product catalog</p>
+              <Link 
+                href="/products"
+                className="bg-orange-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-700 transition-colors inline-flex items-center"
+              >
+                Browse All Products
+                <ChevronRight className="w-5 h-5 ml-2" />
               </Link>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

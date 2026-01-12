@@ -136,8 +136,6 @@ export default function GetQuotePage() {
       default:
         baseCost = deviceCount * 3000;
     }
-
-    // Add additional services cost
     let servicesCost = 0;
     data.additionalServices.forEach(service => {
       switch (service) {

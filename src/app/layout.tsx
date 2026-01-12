@@ -5,6 +5,7 @@ import WhatsAppChatBot from "@/components/WhatsAppChatBot";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Providers } from './providers';
 import { Toaster } from 'sonner';
+import Navbar from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

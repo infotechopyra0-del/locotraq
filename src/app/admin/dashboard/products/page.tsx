@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
@@ -15,13 +14,6 @@ import {
   X,
   Save,
   Upload,
-  Package,
-  Tag,
-  DollarSign,
-  TrendingUp,
-  Eye,
-  CheckCircle,
-  XCircle,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -68,9 +60,7 @@ interface IProduct {
   createdAt?: string;
   updatedAt?: string;
 }
-
 const categories = ["Vehicle", "Personal", "Fleet", "Industrial", "Pet", "Asset"];
-
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,11 +102,9 @@ export default function AdminProductsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
   const loadToastShownRef = useRef(false);
-
   useEffect(() => {
     fetchProducts();
   }, []);
-
   const fetchProducts = async (opts: { forceToast?: boolean } = {}) => {
     setLoading(true);
     try {
@@ -131,12 +119,10 @@ export default function AdminProductsPage() {
         loadToastShownRef.current = true;
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
   };
-
   const uploadToCloudinary = async (file: File): Promise<{ url: string; public_id: string }> => {
     const formData = new FormData();
     formData.append("image", file);
@@ -148,7 +134,6 @@ export default function AdminProductsPage() {
     const data = await res.json();
     return { url: data.url, public_id: data.public_id };
   };
-
   const deleteFromCloudinary = async (publicId: string) => {
     try {
       await fetch("/api/admin/upload", {
@@ -157,10 +142,8 @@ export default function AdminProductsPage() {
         body: JSON.stringify({ public_id: publicId }),
       });
     } catch (error) {
-      console.error("Error deleting from Cloudinary:", error);
     }
   };
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -357,7 +340,6 @@ export default function AdminProductsPage() {
       
       toast.success(isEdit ? "Product updated successfully!" : "Product added successfully!");
     } catch (error) {
-      console.error("Error saving product:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to save product. Please try again.";
       toast.error(errorMessage);
     }
@@ -380,7 +362,6 @@ export default function AdminProductsPage() {
 
       setProducts(prev => prev.filter(p => (p._id ?? p.id) !== productToDelete));
     } catch (error) {
-      console.error("Error deleting product:", error);
     } finally {
       setDeleteDialogOpen(false);
       setProductToDelete(null);

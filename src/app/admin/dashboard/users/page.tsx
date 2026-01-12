@@ -89,7 +89,6 @@ export default function AdminUsersPage() {
         loadToastShownRef.current = true;
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
@@ -143,7 +142,6 @@ export default function AdminUsersPage() {
         prev.filter((u) => (u.id ?? u._id) !== userToDelete)
       );
     } catch (error) {
-      console.error("Error deleting user:", error);
     } finally {
       setDeleteDialogOpen(false);
       setUserToDelete(null);
@@ -174,7 +172,6 @@ export default function AdminUsersPage() {
         prev.map((u) => ((u.id ?? u._id) === id ? updatedUser : u))
       );
     } catch (error) {
-      console.error("Error updating user status:", error);
     }
   };
 
@@ -202,7 +199,6 @@ export default function AdminUsersPage() {
         prev.map((u) => ((u.id ?? u._id) === id ? updatedUser : u))
       );
     } catch (error) {
-      console.error("Error updating user role:", error);
     }
   };
 

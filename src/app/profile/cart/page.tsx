@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { 
   ShoppingCart, Trash2, Plus, Minus, ArrowRight, Shield, 
   Truck, Tag, AlertCircle, Lock, CreditCard, Heart,
   Gift, Percent, ChevronRight, Package, Clock, Loader
 } from 'lucide-react';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Header';
 
 interface CartItem {
   id: string;
@@ -108,7 +109,7 @@ const CartPage = () => {
   if (loading) {
     return (
       <>
-        <Header cartCount={0} wishlistCount={0} />
+        <Navbar />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <Loader className="animate-spin h-12 w-12 text-orange-600 mx-auto mb-4" />
@@ -123,7 +124,7 @@ const CartPage = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <Header cartCount={0} wishlistCount={0} />
+        <Navbar />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
@@ -135,29 +136,23 @@ const CartPage = () => {
       </>
     );
   }
-
   const validPromoCodes: PromoCode[] = [
     { code: 'SAVE10', discount: 10, type: 'percentage' },
     { code: 'FLAT500', discount: 500, type: 'fixed' },
     { code: 'NEWYEAR40', discount: 40, type: 'percentage' }
   ];
-
-  // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const savings = cartItems.reduce((sum, item) => 
     sum + ((item.originalPrice - item.price) * item.quantity), 0
   );
-  
   const shipping = subtotal >= 10000 ? 0 : 150;
-  
   let discount = 0;
   if (appliedPromo) {
     discount = appliedPromo.type === 'percentage' 
       ? (subtotal * appliedPromo.discount) / 100 
       : appliedPromo.discount;
   }
-  
-  const tax = Math.round((subtotal - discount) * 0.18); // 18% GST
+  const tax = Math.round((subtotal - discount) * 0.18);
   const total = subtotal - discount + shipping + tax;
 
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -201,7 +196,7 @@ const CartPage = () => {
   const handleCheckout = () => {
     setIsProcessing(true);
     setTimeout(() => {
-      alert('Proceeding to checkout...');
+      toast.info('Proceeding to checkout...');
       setIsProcessing(false);
     }, 1500);
   };
@@ -237,8 +232,7 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header />
-
+      <Navbar />
       {/* Trust Bar */}
       <div className="bg-orange-50 border-y border-orange-100 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -264,7 +258,7 @@ const CartPage = () => {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
               <div
-                key={item.id}
+                key={item.id || item.productId}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 md:p-6"
               >
                 <div className="flex flex-col sm:flex-row gap-4">

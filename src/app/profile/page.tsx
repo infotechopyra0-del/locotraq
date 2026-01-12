@@ -270,7 +270,7 @@ export default function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar cartCount={cartCount} wishlistCount={wishlistCount} />
+      <Navbar />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { 
   Heart, ShoppingCart, Trash2, ArrowLeft, 
   Package, Star, TrendingDown, Loader2, 
@@ -8,7 +9,7 @@ import {
   Clock, Grid, List
 } from 'lucide-react';
 
-import Header from '@/components/Header';
+import Navbar from '@/components/Header';
 import Footer from '@/components/Footer';
 
 interface WishlistItem {
@@ -99,11 +100,11 @@ const DynamicWishlistPage = () => {
         setWishlistItems(prev => prev.filter(item => item.productId !== productId));
         setTotalItems(prev => prev - 1);
       } else {
-        alert(data.message || 'Failed to remove item');
+        toast.error(data.message || 'Failed to remove item');
       }
     } catch (err) {
       console.error('Remove error:', err);
-      alert('Failed to remove item');
+      toast.error('Failed to remove item');
     } finally {
       setProcessing(null);
     }
@@ -124,13 +125,13 @@ const DynamicWishlistPage = () => {
       if (data.success) {
         setWishlistItems(prev => prev.filter(item => item.productId !== productId));
         setTotalItems(prev => prev - 1);
-        alert('Item moved to cart successfully!');
+        toast.success('Item moved to cart successfully!');
       } else {
-        alert(data.message || 'Failed to move item');
+        toast.error(data.message || 'Failed to move item');
       }
     } catch (err) {
       console.error('Move to cart error:', err);
-      alert('Failed to move item to cart');
+      toast.error('Failed to move item to cart');
     } finally {
       setProcessing(null);
     }
@@ -153,11 +154,11 @@ const DynamicWishlistPage = () => {
         setTotalItems(0);
         setPriceDropCount(0);
       } else {
-        alert(data.message || 'Failed to clear wishlist');
+        toast.error(data.message || 'Failed to clear wishlist');
       }
     } catch (err) {
       console.error('Clear wishlist error:', err);
-      alert('Failed to clear wishlist');
+      toast.error('Failed to clear wishlist');
     } finally {
       setRefreshing(false);
     }
@@ -175,17 +176,17 @@ const DynamicWishlistPage = () => {
         setShareUrl(data.shareUrl);
         setShowShareModal(true);
       } else {
-        alert(data.message || 'Failed to generate share link');
+        toast.error(data.message || 'Failed to generate share link');
       }
     } catch (err) {
       console.error('Share error:', err);
-      alert('Failed to share wishlist');
+      toast.error('Failed to share wishlist');
     }
   };
 
   const copyShareLink = () => {
     navigator.clipboard.writeText(shareUrl);
-    alert('Link copied to clipboard!');
+    toast.success('Link copied to clipboard!');
   };
 
   const categories = ['all', ...new Set(wishlistItems.map(item => item.category))];
@@ -213,7 +214,7 @@ const DynamicWishlistPage = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <Header />
+        <Navbar />
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
           <div className="bg-white rounded-2xl shadow-lg p-12">
             <div className="bg-orange-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -251,7 +252,7 @@ const DynamicWishlistPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header />
+      <Navbar />
       {/* Page Header */}
       <div className="bg-linear-to-r from-orange-500 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4">

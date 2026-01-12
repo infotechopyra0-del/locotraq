@@ -315,57 +315,45 @@ ProductSchema.pre('save', function(this: IProduct) {
   this.inStock = this.stockQuantity > 0;
 });
 
-// Ensure images array includes productImage
 ProductSchema.pre('save', function(this: IProduct) {
   if (this.productImage && !this.images.includes(this.productImage)) {
     this.images.unshift(this.productImage);
   }
 });
 
-// Set imageUrl to productImage if not set
 ProductSchema.pre('save', function(this: IProduct) {
   if (!this.imageUrl && this.productImage) {
     this.imageUrl = this.productImage;
   }
 });
 
-// Generate meta title if not provided
 ProductSchema.pre('save', function(this: IProduct) {
   if (!this.metaTitle) {
     this.metaTitle = `${this.productName} - Locotraq GPS Tracking`;
   }
 });
 
-// Generate meta description if not provided
 ProductSchema.pre('save', function(this: IProduct) {
   if (!this.metaDescription) {
     this.metaDescription = this.shortDescription;
   }
 });
 
-// ============================================
-// STATIC METHODS
-// ============================================
-
-// Find active products
 ProductSchema.statics.findActive = function() {
   return this.find({ isActive: true, inStock: true });
 };
 
-// Find featured products
 ProductSchema.statics.findFeatured = function(limit = 6) {
   return this.find({ isFeatured: true, isActive: true, inStock: true })
     .sort({ rating: -1, salesCount: -1 })
     .limit(limit);
 };
 
-// Find by category
 ProductSchema.statics.findByCategory = function(category: string) {
   return this.find({ category, isActive: true, inStock: true })
     .sort({ rating: -1 });
 };
 
-// Search products
 ProductSchema.statics.search = function(query: string) {
   return this.find(
     { 
@@ -376,14 +364,12 @@ ProductSchema.statics.search = function(query: string) {
   ).sort({ score: { $meta: 'textScore' } });
 };
 
-// Get best sellers
 ProductSchema.statics.getBestSellers = function(limit = 10) {
   return this.find({ isActive: true, inStock: true })
     .sort({ salesCount: -1 })
     .limit(limit);
 };
 
-// Get top rated
 ProductSchema.statics.getTopRated = function(limit = 10) {
   return this.find({ isActive: true, inStock: true, reviewCount: { $gte: 10 } })
     .sort({ rating: -1, reviewCount: -1 })

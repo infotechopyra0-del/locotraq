@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Clock, FileText, HelpCircle, Bug, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
-import Navbar from '@/components/Header';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Header';
 
 export default function SupportPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);

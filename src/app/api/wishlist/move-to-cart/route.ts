@@ -29,8 +29,18 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
-    // Verify product
-    const product = await Product.findById(productId);
+    // Verify product - handle both ObjectId and slug
+    let product;
+    
+    // First try to find by MongoDB ObjectId
+    if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findById(productId);
+    }
+    
+    // If not found or invalid ObjectId, try to find by slug
+    if (!product) {
+      product = await Product.findOne({ slug: productId });
+    }
     
     if (!product || !product.isActive) {
       return NextResponse.json(
@@ -50,11 +60,15 @@ export async function POST(req: NextRequest) {
     let cart = await Cart.findOne({ userId: session.user.id });
 
     if (!cart) {
-      cart = new Cart({ userId: session.user.id, items: [] });
+      cart = new Cart({ 
+        userId: session.user.id, 
+        userEmail: session.user.email,
+        items: [] 
+      });
     }
 
     const existingCartItem = cart.items.findIndex(
-      item => item.productId.toString() === productId
+      item => item.productId.toString() === product._id.toString()
     );
 
     if (existingCartItem > -1) {
@@ -75,7 +89,7 @@ export async function POST(req: NextRequest) {
     
     if (wishlist) {
       wishlist.items = wishlist.items.filter(
-        item => item.productId.toString() !== productId
+        item => item.productId.toString() !== product._id.toString()
       );
       await wishlist.save();
     }

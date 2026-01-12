@@ -77,7 +77,10 @@ export const authOptions: NextAuthOptions = {
   
   callbacks: {
     async jwt({ token, user, account }) {
+      console.log('🎫 JWT Callback - Token:', !!token, 'User:', !!user, 'Account:', account?.provider);
+      
       if (user) {
+        console.log('👤 User data in JWT:', { id: user.id, email: user.email, role: user.role });
         token.id = user.id;
         token.role = user.role || 'user';
         token.emailVerified = Boolean(user.emailVerified);
@@ -114,14 +117,24 @@ export const authOptions: NextAuthOptions = {
           }
         }
       }
+      
+      console.log('🎫 JWT Token final:', { id: token.id, role: token.role, email: token.email });
       return token;
     },
     
     async session({ session, token }) {
+      console.log('🔄 Session Callback - Token:', !!token);
+      
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.emailVerified = token.emailVerified as boolean;
+        
+        console.log('👤 Session user final:', {
+          id: session.user.id,
+          role: session.user.role,
+          email: session.user.email
+        });
       }
       return session;
     }
@@ -134,7 +147,19 @@ export const authOptions: NextAuthOptions = {
   
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, 
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      }
+    },
   },
   
   secret: process.env.NEXTAUTH_SECRET,

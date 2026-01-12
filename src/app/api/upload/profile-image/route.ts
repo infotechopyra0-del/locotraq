@@ -12,31 +12,24 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user) {
       return NextResponse.json(
         { success: false, message: 'Not authenticated' },
         { status: 401 }
       );
     }
-
     const userEmail = session.user.email;
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const oldPublicId = formData.get('oldPublicId') as string;
-
     if (!file) {
       return NextResponse.json(
         { success: false, message: 'No file provided' },
         { status: 400 }
       );
     }
-
-    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
@@ -55,10 +48,7 @@ export async function POST(request: NextRequest) {
         }
       ).end(buffer);
     });
-
     const result = uploadResult as any;
-
-    // Delete old image if exists
     if (oldPublicId) {
       try {
         await cloudinary.uploader.destroy(oldPublicId);
@@ -66,7 +56,6 @@ export async function POST(request: NextRequest) {
         console.error('Error deleting old image:', error);
       }
     }
-
     return NextResponse.json({
       success: true,
       imageUrl: result.secure_url,
