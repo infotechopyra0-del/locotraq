@@ -267,7 +267,7 @@ export default function Navbar({
                 alt="Locotraq Logo"
                 width={100}
                 height={60}
-                style={{ width: 'auto', height: 'auto' }}
+                style={{ width: '100', height: '60' }}
                 priority
                 className="object-contain"
               />
