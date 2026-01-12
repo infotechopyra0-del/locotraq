@@ -9,6 +9,7 @@ import {
   BadgeCheck, Percent, Gift, Sparkles, ThumbsUp, MessageCircle, PlayCircle
 } from 'lucide-react';
 import { Calendar } from 'lucide-react';
+import { toast } from 'sonner';
 
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
@@ -1083,17 +1084,24 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
         setWishlistCount(data.count || 0);
       }
     } catch (error) {
-      // Handle error silently
     }
   };
 
   const handleAddToCart = async (product: Product) => {
     if (!isSignedIn) {
-      alert('Please login to add items to cart');
+      toast.error('Please login to add items to cart', {
+        description: 'You need to be logged in to add products to your cart',
+        action: {
+          label: 'Login',
+          onClick: () => window.location.href = '/auth/login'
+        }
+      });
       return;
     }
 
     try {
+      toast.loading('Adding to cart...', { id: 'add-to-cart' });
+
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1109,22 +1117,46 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
       });
 
       const data = await res.json();
+      
       if (data.success) {
         setCartCount(data.cartCount);
-        alert('Product added to cart!');
+        toast.success('Product added to cart!', {
+          id: 'add-to-cart',
+          description: `${product.productName} has been added to your cart`,
+          action: {
+            label: 'View Cart',
+            onClick: () => window.location.href = '/cart'
+          }
+        });
+      } else {
+        toast.error('Failed to add to cart', {
+          id: 'add-to-cart',
+          description: data.message || 'Something went wrong while adding to cart'
+        });
       }
     } catch (error) {
-      alert('Failed to add to cart');
+      toast.error('Failed to add to cart', {
+        id: 'add-to-cart',
+        description: 'Network error occurred. Please try again.'
+      });
     }
   };
 
   const handleAddToWishlist = async (product: Product) => {
     if (!isSignedIn) {
-      alert('Please login to add items to wishlist');
+      toast.error('Please login to add items to wishlist', {
+        description: 'You need to be logged in to add products to your wishlist',
+        action: {
+          label: 'Login',
+          onClick: () => window.location.href = '/auth/login'
+        }
+      });
       return;
     }
 
     try {
+      toast.loading('Adding to wishlist...', { id: 'add-to-wishlist' });
+
       const res = await fetch('/api/wishlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1139,21 +1171,40 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
       });
 
       const data = await res.json();
+      
       if (data.success) {
         setWishlistCount(data.count);
-        alert('Product added to wishlist!');
+        toast.success('Added to wishlist!', {
+          id: 'add-to-wishlist',
+          description: `${product.productName} has been added to your wishlist`,
+          action: {
+            label: 'View Wishlist',
+            onClick: () => window.location.href = '/wishlist'
+          }
+        });
       } else {
-        alert(data.message || 'Already in wishlist');
+        toast.error(data.message || 'Already in wishlist', {
+          id: 'add-to-wishlist',
+          description: 'This item might already be in your wishlist'
+        });
       }
     } catch (error) {
-      alert('Failed to add to wishlist');
+      toast.error('Failed to add to wishlist', {
+        id: 'add-to-wishlist',
+        description: 'Network error occurred. Please try again.'
+      });
     }
   };
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      alert('Thank you for subscribing!');
+      toast.success('Thank you for subscribing!', {
+        description: 'You will receive updates about our latest products and offers',
+        duration: 3000
+      });
       setEmail('');
+    } else {
+      toast.error('Please enter a valid email address');
     }
   };
 
@@ -1176,7 +1227,7 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       {/* Hero Slider */}
-      <section className="relative h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-linear-to-r from-orange-50 to-orange-100">
+      <section className="relative h-125 md:h-175 lg:h-175 overflow-hidden bg-linear-to-r from-orange-50 to-orange-100">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -1237,7 +1288,7 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
                       <img
                         src={slide.image}
                         alt={slide.title}
-                        className="w-full h-[500px] object-cover"
+                        className="w-full h-125 object-cover"
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
                     </div>
@@ -1607,7 +1658,7 @@ function LocotraqHomeCore({ isSignedIn, user }: { isSignedIn: boolean; user: any
               <img 
                 src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80" 
                 alt="Demo Video" 
-                className="w-full h-[400px] object-cover"
+                className="w-full h-100 object-cover"
               />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
                 <div className="bg-orange-600 w-20 h-20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">

@@ -31,33 +31,43 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        console.log('🔐 Credentials received:', { email: credentials?.email, hasPassword: !!credentials?.password });
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('❌ Missing credentials');
           throw new Error('Please provide email and password');
         }
 
         await dbConnect();
+        console.log('📡 Database connected for auth');
 
         // Find user and include password field
         const user = await User.findOne({ email: credentials.email }).select('+password');
+        console.log('👤 User found:', !!user, user ? { email: user.email, isActive: user.isActive } : 'No user');
 
         if (!user) {
+          console.log('❌ No user found with email:', credentials.email);
           throw new Error('Invalid email or password');
         }
 
         if (!user.isActive) {
+          console.log('❌ User account deactivated:', credentials.email);
           throw new Error('Your account has been deactivated');
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        console.log('🔑 Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
+          console.log('❌ Invalid password for user:', credentials.email);
           throw new Error('Invalid email or password');
         }
 
+        console.log('✅ Login successful for user:', credentials.email);
         return {
           id: user._id.toString(),
           email: user.email,
-          name: user.name,
+          name: user.name || `${user.firstName} ${user.lastName}`,
           role: user.role,
           emailVerified: user.emailVerified
         };
@@ -129,6 +139,6 @@ export const authOptions: NextAuthOptions = {
   
   secret: process.env.NEXTAUTH_SECRET,
   
-  // Only enable debug in development and when explicitly requested
-  debug: process.env.NODE_ENV === 'development' && process.env.NEXTAUTH_DEBUG === 'true',
+  // Debug mode completely disabled
+  debug: false,
 };

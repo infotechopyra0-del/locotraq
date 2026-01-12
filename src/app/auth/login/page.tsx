@@ -103,6 +103,7 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    
     if (!isValidEmail(loginData.email)) {
       setError('Please enter a valid email address');
       setLoading(false);
@@ -110,33 +111,35 @@ function LoginForm() {
     }
 
     try {
-      const response = await fetch('/api/auth/callback/credentials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: loginData.email,
-          password: loginData.password,
-        })
+      const callbackUrl = searchParams.get('callbackUrl') || '/';
+      
+      const result = await signIn('credentials', {
+        email: loginData.email,
+        password: loginData.password,
+        redirect: false,
+        callbackUrl: callbackUrl
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Invalid email or password');
+      if (result?.error) {
+        setError(result.error);
         setLoading(false);
         return;
       }
 
-      const sessionResponse = await fetch('/api/auth/session');
-      const session = await sessionResponse.json();
+      if (result?.ok) {
+        // Check user role after successful login
+        const sessionResponse = await fetch('/api/auth/session');
+        const session = await sessionResponse.json();
 
-      if (session?.user?.role === 'admin') {
-        window.location.href = '/admin/dashboard';
-      } else {
-        window.location.href = '/';
+        if (session?.user?.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push(callbackUrl);
+        }
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      console.error('Login error:', err);
+      setError('Login failed. Please try again.');
       setLoading(false);
     }
   };
@@ -322,7 +325,7 @@ function LoginForm() {
           {/* Logo */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center transform rotate-12 shadow-lg shadow-orange-500/30">
+              <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center transform rotate-12 shadow-lg shadow-orange-500/30">
                 <MapPin className="w-6 h-6 text-white -rotate-12" />
               </div>
             </div>

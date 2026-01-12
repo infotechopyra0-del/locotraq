@@ -4,6 +4,7 @@ import "./globals.css";
 import WhatsAppChatBot from "@/components/WhatsAppChatBot";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Providers } from './providers';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,6 +71,13 @@ export default function RootLayout({
           </main>
           <WhatsAppChatBot />
           <ServiceWorkerRegister />
+          <Toaster 
+            position="top-right"
+            richColors
+            closeButton
+            expand
+            duration={4000}
+          />
       </body>
     </html>
   );

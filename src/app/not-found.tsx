@@ -75,7 +75,7 @@ export default function NotFoundPage() {
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl"
+                  className="w-32 h-32 md:w-40 md:h-40 bg-linear-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl"
                 >
                   <MapPin className="h-16 w-16 md:h-20 md:w-20 text-white" />
                 </motion.div>
@@ -123,7 +123,7 @@ export default function NotFoundPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-6 mb-12 border-2 border-orange-200"
+            className="bg-linear-to-r from-orange-50 to-orange-100 rounded-2xl p-6 mb-12 border-2 border-orange-200"
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               {[
@@ -161,7 +161,7 @@ export default function NotFoundPage() {
                   transition={{ duration: 0.4, delay: 1.0 + index * 0.1 }}
                 >
                   <Link href={link.href}>
-                    <div className={`bg-gradient-to-br ${link.color} p-6 rounded-2xl border-2 border-gray-200 hover:border-orange-600 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full`}>
+                    <div className={`bg-linear-to-br ${link.color} p-6 rounded-2xl border-2 border-gray-200 hover:border-orange-600 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full`}>
                       <div className="flex items-start space-x-4">
                         <div className="bg-white p-3 rounded-xl shadow-md group-hover:scale-110 transition-transform">
                           <link.icon className="h-6 w-6 text-orange-600" />
@@ -209,7 +209,7 @@ export default function NotFoundPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <a 
                 href="tel:+916390057777"
-                className="flex items-center justify-center space-x-3 bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200 hover:border-orange-600 transition-all group"
+                className="flex items-center justify-center space-x-3 bg-linear-to-r from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200 hover:border-orange-600 transition-all group"
               >
                 <div className="bg-white p-3 rounded-full shadow-md group-hover:scale-110 transition-transform">
                   <Phone className="h-6 w-6 text-orange-600" />
@@ -219,10 +219,9 @@ export default function NotFoundPage() {
                   <div className="text-lg font-black text-gray-900">+91 639 005 7777</div>
                 </div>
               </a>
-
               <a 
                 href="mailto:support@locotraq.com"
-                className="flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200 hover:border-blue-600 transition-all group"
+                className="flex items-center justify-center space-x-3 bg-linear-to-r from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200 hover:border-blue-600 transition-all group"
               >
                 <div className="bg-white p-3 rounded-full shadow-md group-hover:scale-110 transition-transform">
                   <Mail className="h-6 w-6 text-blue-600" />

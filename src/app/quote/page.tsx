@@ -48,21 +48,31 @@ export default function GetQuotePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setResult("Sending....");
-    
-    const form = e.target as HTMLFormElement;
-    const formDataWeb3 = new FormData(form);
-    formDataWeb3.append("access_key", "1c32a200-cb16-4db7-a524-a74052927e6a");
-    formDataWeb3.append("subject", "New Quote Request from Locotraq Website");
-    formDataWeb3.append("from_name", "Locotraq Quote Form");
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      // Save to database
+      const dbResponse = await fetch("/api/quote", {
         method: "POST",
-        body: formDataWeb3
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          industry: formData.industry,
+          trackingType: formData.trackingType,
+          numberOfDevices: formData.numberOfDevices,
+          additionalServices: formData.additionalServices.join(', '),
+          budget: formData.budget,
+          timeline: formData.timeline,
+          message: formData.message,
+        }),
       });
 
-      const data = await response.json();
-      if (data.success) {
+      const dbData = await dbResponse.json();
+      if (dbData.success) {
         setResult("Quote Request Submitted Successfully! We'll send you a detailed quote within 24 hours.");
         // Reset form
         setFormData({
@@ -78,11 +88,12 @@ export default function GetQuotePage() {
           timeline: '',
           message: ''
         });
-        form.reset();
+        setEstimatedCost(0);
       } else {
         setResult("Error submitting quote request. Please try again.");
       }
     } catch (error) {
+      console.error('Quote submission error:', error);
       setResult("Error submitting quote request. Please try again.");
     }
   };
@@ -262,10 +273,6 @@ export default function GetQuotePage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Hidden fields for Web3 Forms */}
-                    <input type="hidden" name="form_type" value="Quote Request" />
-                    <input type="hidden" name="estimated_cost" value={`₹${estimatedCost.toLocaleString('en-IN')}`} />
-                    
                     {/* Personal Information */}
                     <div className="space-y-4">
                       <h3 className="text-lg font-heading font-semibold text-foreground">
@@ -276,7 +283,6 @@ export default function GetQuotePage() {
                           <Label htmlFor="name">Full Name *</Label>
                           <Input
                             id="name"
-                            name="name"
                             value={formData.name}
                             onChange={(e) => handleChange('name', e.target.value)}
                             placeholder="Your full name"
@@ -288,7 +294,6 @@ export default function GetQuotePage() {
                           <Label htmlFor="email">Email Address *</Label>
                           <Input
                             id="email"
-                            name="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleChange('email', e.target.value)}
@@ -301,7 +306,6 @@ export default function GetQuotePage() {
                           <Label htmlFor="phone">Phone Number *</Label>
                           <Input
                             id="phone"
-                            name="phone"
                             value={formData.phone}
                             onChange={(e) => handleChange('phone', e.target.value)}
                             placeholder="+91 6390 057 777"
@@ -313,7 +317,6 @@ export default function GetQuotePage() {
                           <Label htmlFor="company">Company/Organization</Label>
                           <Input
                             id="company"
-                            name="company"
                             value={formData.company}
                             onChange={(e) => handleChange('company', e.target.value)}
                             placeholder="Company name"
@@ -331,7 +334,7 @@ export default function GetQuotePage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="industry">Industry</Label>
-                          <Select name="industry" value={formData.industry} onValueChange={(value) => handleChange('industry', value)}>
+                          <Select value={formData.industry} onValueChange={(value) => handleChange('industry', value)}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select your industry" />
                             </SelectTrigger>
@@ -349,7 +352,7 @@ export default function GetQuotePage() {
                         </div>
                         <div>
                           <Label htmlFor="trackingType">Tracking Type *</Label>
-                          <Select name="tracking_type" value={formData.trackingType} onValueChange={(value) => handleChange('trackingType', value)}>
+                          <Select value={formData.trackingType} onValueChange={(value) => handleChange('trackingType', value)}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select tracking type" />
                             </SelectTrigger>
@@ -364,7 +367,7 @@ export default function GetQuotePage() {
                         </div>
                         <div>
                           <Label htmlFor="numberOfDevices">Number of Devices *</Label>
-                          <Select name="number_of_devices" value={formData.numberOfDevices} onValueChange={(value) => handleChange('numberOfDevices', value)}>
+                          <Select value={formData.numberOfDevices} onValueChange={(value) => handleChange('numberOfDevices', value)}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select quantity" />
                             </SelectTrigger>
@@ -380,7 +383,7 @@ export default function GetQuotePage() {
                         </div>
                         <div>
                           <Label htmlFor="budget">Budget Range</Label>
-                          <Select name="budget" value={formData.budget} onValueChange={(value) => handleChange('budget', value)}>
+                          <Select value={formData.budget} onValueChange={(value) => handleChange('budget', value)}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select budget range" />
                             </SelectTrigger>
@@ -419,7 +422,6 @@ export default function GetQuotePage() {
                           </div>
                         ))}
                       </div>
-                      <input type="hidden" name="additional_services" value={formData.additionalServices.join(', ')} />
                     </div>
 
                     {/* Project Details */}
@@ -429,7 +431,7 @@ export default function GetQuotePage() {
                       </h3>
                       <div>
                         <Label htmlFor="timeline">Implementation Timeline</Label>
-                        <Select name="timeline" value={formData.timeline} onValueChange={(value) => handleChange('timeline', value)}>
+                        <Select value={formData.timeline} onValueChange={(value) => handleChange('timeline', value)}>
                           <SelectTrigger className="mt-1">
                             <SelectValue placeholder="Select timeline" />
                           </SelectTrigger>
@@ -446,7 +448,6 @@ export default function GetQuotePage() {
                         <Label htmlFor="message">Additional Requirements</Label>
                         <Textarea
                           id="message"
-                          name="message"
                           value={formData.message}
                           onChange={(e) => handleChange('message', e.target.value)}
                           placeholder="Please describe any specific requirements, integration needs, or questions you have..."

@@ -99,6 +99,21 @@ export default function Navbar({
   const checkAuthStatus = async () => {
     try {
       const response = await fetch('/api/auth/session');
+      
+      if (!response.ok) {
+        console.error('Session fetch failed in Header:', response.statusText);
+        setIsAuthenticated(false);
+        return;
+      }
+      
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('Header session API returned non-JSON response');
+        setIsAuthenticated(false);
+        return;
+      }
+      
       const data = await response.json();
       
       if (data && data.user) {
@@ -150,10 +165,8 @@ export default function Navbar({
 
   const profileMenuItems = [
     { name: "My Profile", href: "/profile", icon: User },
-    { name: "My Orders", href: "/orders", icon: Receipt },
-    { name: "Wishlist", href: "/wishlist", icon: Heart },
-    { name: "Addresses", href: "/addresses", icon: MapPin },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "My Orders", href: "/profile/my-orders", icon: Receipt },
+    { name: "Wishlist", href: "/profile/wishlist", icon: Heart },
   ];
 
   return (
@@ -254,8 +267,10 @@ export default function Navbar({
                 src="/images/MainLogo.jpg"
                 alt="Locotraq Logo"
                 width={100}
-                height={100}
+                height={60}
+                style={{ height: 'auto' }}
                 priority
+                className="object-contain"
               />
             </Link>
 
@@ -374,6 +389,18 @@ export default function Navbar({
                   <span>Login</span>
                 </Link>
               )}
+
+              {/* Cart */}
+              <Link href="/cart" className="relative hover:text-orange-600 transition-colors">
+                <ShoppingCart />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Wishlist */}
               <Link href="/wishlist" className="relative hover:text-orange-600 transition-colors">
                 <Heart />
                 {wishlistCount > 0 && (

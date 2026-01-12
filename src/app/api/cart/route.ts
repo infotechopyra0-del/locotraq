@@ -8,8 +8,12 @@ import Product from '@/models/Product';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const emailParam = req.nextUrl.searchParams.get('email');
     
-    if (!session || !session.user) {
+    // Check if user is authenticated via session OR email param
+    const userEmail = session?.user?.email || emailParam;
+    
+    if (!userEmail) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
@@ -18,7 +22,8 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
 
-    const cart = await Cart.findOne({ userId: session.user.id })
+    // Find cart by email instead of userId
+    const cart = await Cart.findOne({ userEmail: userEmail })
       .populate({
         path: 'items.productId',
         select: 'productName price originalPrice productImage category stockQuantity isActive specifications features'
@@ -129,12 +134,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Find or create cart
-    let cart = await Cart.findOne({ userId: session.user.id });
+    // Find or create cart using userEmail instead of userId
+    let cart = await Cart.findOne({ userEmail: session.user.email });
 
     if (!cart) {
       cart = new Cart({
         userId: session.user.id,
+        userEmail: session.user.email,
         items: []
       });
     }

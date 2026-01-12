@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ShoppingCart, Trash2, Plus, Minus, ArrowRight, Shield, 
   Truck, Tag, AlertCircle, Lock, CreditCard, Heart,
-  Gift, Percent, ChevronRight, Package, Clock
+  Gift, Percent, ChevronRight, Package, Clock, Loader
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -28,37 +29,112 @@ interface PromoCode {
 }
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      productId: 'loco-vehicle-tracking-device',
-      productName: 'Loco Vehicle Tracking Device',
-      price: 5500,
-      originalPrice: 6500,
-      quantity: 1,
-      productImage: '/images/Loco-Vehicle-Tracking-Device.jpg',
-      category: 'Vehicle',
-      inStock: true,
-      maxQuantity: 10
-    },
-    {
-      id: '2',
-      productId: 'live-tracking-device',
-      productName: 'Live Tracking Device',
-      price: 5500,
-      originalPrice: 6500,
-      quantity: 2,
-      productImage: '/images/Live-Tracking-Device.jpg',
-      category: 'Personal',
-      inStock: true,
-      maxQuantity: 10
-    }
-  ]);
+  const router = useRouter();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
   const [promoError, setPromoError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const checkAuthAndFetchCart = async () => {
+      try {
+        // Check session/cookies
+        const sessionResponse = await fetch('/api/auth/session');
+        
+        if (!sessionResponse.ok) {
+          console.error('Session fetch failed:', sessionResponse.statusText);
+          setIsAuthenticated(false);
+          setCartItems([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Check if response is JSON
+        const contentType = sessionResponse.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Session API returned non-JSON response, likely redirected');
+          setIsAuthenticated(false);
+          setCartItems([]);
+          setLoading(false);
+          return;
+        }
+        
+        const sessionData = await sessionResponse.json();
+        console.log('Session data:', sessionData);
+        if (sessionData?.user?.email) {
+          setIsAuthenticated(true);
+          setUserEmail(sessionData.user.email);
+          // Fetch cart data from database for this user
+          const cartResponse = await fetch(`/api/cart?email=${encodeURIComponent(sessionData.user.email)}`);
+          
+          if (cartResponse.ok) {
+            const contentType = cartResponse.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              const cartData = await cartResponse.json();
+              console.log('Cart data from database:', cartData);
+              setCartItems(cartData.items || []);
+            } else {
+              console.warn('Cart API returned non-JSON response');
+              setCartItems([]);
+            }
+          } else {
+            console.log('Cart API request failed:', cartResponse.status, cartResponse.statusText);
+            setCartItems([]);
+          }
+        } else {
+          // User not authenticated - middleware should handle redirect
+          console.log('No session found, user will be redirected by middleware');
+          setIsAuthenticated(false);
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error('Error checking auth or fetching cart:', error);
+        setIsAuthenticated(false);
+        setCartItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndFetchCart();
+  }, []);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <>
+        <Header cartCount={0} wishlistCount={0} />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader className="animate-spin h-12 w-12 text-orange-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading your cart...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Header cartCount={0} wishlistCount={0} />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Login Required</h1>
+            <p className="text-gray-600">Please login to view your cart</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   const validPromoCodes: PromoCode[] = [
     { code: 'SAVE10', discount: 10, type: 'percentage' },

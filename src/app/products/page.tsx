@@ -1114,7 +1114,7 @@ function ProductsPageCore({ isSignedIn }: { isSignedIn: boolean }) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden h-[700px] flex flex-col"
+                  className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden h-175 flex flex-col"
                 >
                   {/* Product Image */}
                   <div className="relative h-64 overflow-hidden bg-gray-100 shrink-0">

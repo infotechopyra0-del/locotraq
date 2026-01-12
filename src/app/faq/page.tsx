@@ -2,9 +2,9 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, HelpCircle, Search, ChevronDown, ChevronUp, MapPin, Battery, Smartphone, Shield, CreditCard, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function FAQPage() {
   const [openItems, setOpenItems] = useState<number[]>([]);
@@ -22,32 +22,32 @@ export default function FAQPage() {
     {
       icon: HelpCircle,
       title: "Getting Started",
-      color: "bg-blue-500"
+      color: "from-orange-500 to-orange-700"
     },
     {
       icon: MapPin,
       title: "GPS Tracking",
-      color: "bg-green-500"
+      color: "from-orange-600 to-red-600"
     },
     {
       icon: Battery,
       title: "Device Support",
-      color: "bg-orange-500"
+      color: "from-orange-500 to-orange-700"
     },
     {
       icon: Smartphone,
       title: "Mobile Apps",
-      color: "bg-purple-500"
+      color: "from-red-500 to-orange-600"
     },
     {
       icon: CreditCard,
       title: "Billing & Plans",
-      color: "bg-red-500"
+      color: "from-orange-600 to-red-600"
     },
     {
       icon: Shield,
       title: "Privacy & Security",
-      color: "bg-gray-500"
+      color: "from-orange-500 to-orange-700"
     }
   ];
 
@@ -176,89 +176,57 @@ export default function FAQPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+
       {/* Header Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-linear-to-r from-orange-600 to-orange-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center"
+            className="text-center text-white"
           >
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
               Frequently Asked Questions
             </h1>
-            <p className="text-lg font-paragraph opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Find answers to common questions about our GPS tracking devices and services.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Search Section */}
-      <section className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative mb-12"
-          >
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary h-5 w-5" />
-              <input
-                type="text"
-                placeholder="Search for answers..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-paragraph"
-              />
-            </div>
-            {searchTerm && (
-              <p className="mt-4 text-sm text-secondary font-paragraph">
-                Found {filteredFAQs.length} result{filteredFAQs.length !== 1 ? 's' : ''} for "{searchTerm}"
-              </p>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Categories Section */}
       {!searchTerm && (
-        <section className="py-8 bg-card">
-          <div className="max-w-400 mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-center mb-8"
+              className="text-center mb-12"
             >
-              <h2 className="text-2xl font-heading font-semibold text-foreground mb-4">
+              <h2 className="text-3xl font-black text-gray-900 mb-2">
                 Browse by Category
               </h2>
+              <p className="text-gray-600">Select a category to find relevant answers</p>
             </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
               {faqCategories.map((category, index) => (
                 <motion.div
                   key={category.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
-                  className="text-center"
+                  className="text-center group cursor-pointer"
                 >
-                  <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-3 cursor-pointer hover:scale-105 transition-transform`}>
-                    <category.icon className="h-8 w-8 text-white" />
+                  <div className={`w-20 h-20 bg-linear-to-br ${category.color} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md group-hover:shadow-xl group-hover:scale-110 transition-all duration-300`}>
+                    <category.icon className="h-9 w-9 text-white" />
                   </div>
-                  <h3 className="text-sm font-heading font-medium text-foreground">
+                  <h3 className="text-sm font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
                     {category.title}
                   </h3>
                 </motion.div>
@@ -279,50 +247,48 @@ export default function FAQPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-0">
-                    <button
-                      onClick={() => toggleItem(index)}
-                      className="w-full p-6 text-left hover:bg-card/50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center mb-2">
-                            <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded mr-3">
-                              {faq.category}
-                            </span>
-                          </div>
-                          <h3 className="text-lg font-heading font-semibold text-foreground pr-4">
-                            {faq.question}
-                          </h3>
+                <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-orange-600 overflow-hidden">
+                  <button
+                    onClick={() => toggleItem(index)}
+                    className="w-full p-6 text-left hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full">
+                            {faq.category}
+                          </span>
                         </div>
-                        <div className="shrink-0">
-                          {openItems.includes(index) ? (
-                            <ChevronUp className="h-5 w-5 text-secondary" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-secondary" />
-                          )}
-                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 pr-4">
+                          {faq.question}
+                        </h3>
                       </div>
-                    </button>
-                    
-                    {openItems.includes(index) && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="px-6 pb-6"
-                      >
-                        <div className="border-t pt-4">
-                          <p className="font-paragraph text-secondary leading-relaxed">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
+                      <div className="shrink-0">
+                        {openItems.includes(index) ? (
+                          <ChevronUp className="h-6 w-6 text-orange-600" />
+                        ) : (
+                          <ChevronDown className="h-6 w-6 text-gray-400" />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                  
+                  {openItems.includes(index) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="px-6 pb-6"
+                    >
+                      <div className="border-t border-gray-200 pt-4">
+                        <p className="text-gray-700 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -332,18 +298,21 @@ export default function FAQPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-center py-12"
+              className="text-center py-12 bg-white rounded-xl shadow-md"
             >
-              <HelpCircle className="h-16 w-16 text-secondary mx-auto mb-4" />
-              <h3 className="text-xl font-heading font-semibold text-foreground mb-2">
+              <HelpCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-2xl font-black text-gray-900 mb-2">
                 No results found
               </h3>
-              <p className="font-paragraph text-secondary mb-6">
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 We couldn't find any FAQs matching your search. Try different keywords or browse our categories.
               </p>
-              <Button onClick={() => setSearchTerm('')} variant="outline">
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="bg-orange-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105"
+              >
                 Clear Search
-              </Button>
+              </button>
             </motion.div>
           )}
 
@@ -352,33 +321,36 @@ export default function FAQPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="mt-16 text-center"
+            className="mt-16"
           >
-            <Card>
-              <CardContent className="p-8">
-                <h3 className="text-xl font-heading font-semibold text-foreground mb-4">
-                  Still have questions?
-                </h3>
-                <p className="font-paragraph text-secondary mb-6">
-                  Can't find the answer you're looking for? Our support team is ready to help you.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button asChild>
-                    <Link href="/support">
-                      Contact Support
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link href="/contact">
-                      Get in Touch
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 text-center">
+              <HelpCircle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+              <h3 className="text-2xl font-black text-gray-900 mb-3">
+                Still have questions?
+              </h3>
+              <p className="text-gray-600 mb-6 max-w-xl mx-auto">
+                Can't find the answer you're looking for? Our support team is ready to help you 24/7.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/contact"
+                  className="inline-block bg-orange-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-md"
+                >
+                  Contact Support
+                </Link>
+                <Link
+                  href="/products"
+                  className="inline-block border-2 border-orange-600 text-orange-600 px-8 py-3 rounded-xl font-bold hover:bg-orange-600 hover:text-white transition-all transform hover:scale-105"
+                >
+                  Browse Products
+                </Link>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

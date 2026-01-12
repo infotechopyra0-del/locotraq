@@ -51,7 +51,7 @@ export default function StoreLocatorPage() {
       state: "Uttar Pradesh",
       pincode: "221005",
       phone: "+91 6390 057 777",
-      email: "varanasi@locotraq.com",
+      email: "support@locotraq.com",
       coordinates: { lat: 25.2677, lng: 82.9913 },
       hours: {
         weekday: "9:00 AM - 6:00 PM",
@@ -63,106 +63,6 @@ export default function StoreLocatorPage() {
       isOpen: true,
       services: ["Sales", "Support", "Installation", "Repairs"]
     },
-    {
-      id: 2,
-      name: "Locotraq Delhi Store",
-      address: "Connaught Place, Central Delhi",
-      city: "Delhi",
-      state: "Delhi",
-      pincode: "110001",
-      phone: "+91 11 2345 6789",
-      email: "delhi@locotraq.com",
-      coordinates: { lat: 28.6315, lng: 77.2167 },
-      hours: {
-        weekday: "10:00 AM - 7:00 PM",
-        weekend: "11:00 AM - 5:00 PM"
-      },
-      rating: 4.6,
-      reviews: 203,
-      distance: 670,
-      isOpen: true,
-      services: ["Sales", "Support", "Installation"]
-    },
-    {
-      id: 3,
-      name: "Locotraq Mumbai Showroom",
-      address: "Andheri East, Mumbai",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400069",
-      phone: "+91 22 4567 8901",
-      email: "mumbai@locotraq.com",
-      coordinates: { lat: 19.1136, lng: 72.8697 },
-      hours: {
-        weekday: "9:30 AM - 7:30 PM",
-        weekend: "10:00 AM - 6:00 PM"
-      },
-      rating: 4.7,
-      reviews: 189,
-      distance: 1340,
-      isOpen: true,
-      services: ["Sales", "Support", "Demo"]
-    },
-    {
-      id: 4,
-      name: "Locotraq Bangalore Center",
-      address: "Koramangala, Bangalore",
-      city: "Bangalore",
-      state: "Karnataka",
-      pincode: "560034",
-      phone: "+91 80 1234 5678",
-      email: "bangalore@locotraq.com",
-      coordinates: { lat: 12.9352, lng: 77.6245 },
-      hours: {
-        weekday: "9:00 AM - 7:00 PM",
-        weekend: "10:00 AM - 5:00 PM"
-      },
-      rating: 4.9,
-      reviews: 241,
-      distance: 1580,
-      isOpen: false,
-      services: ["Sales", "Support", "Installation", "Training"]
-    },
-    {
-      id: 5,
-      name: "Locotraq Kolkata Office",
-      address: "Salt Lake, Kolkata",
-      city: "Kolkata",
-      state: "West Bengal",
-      pincode: "700091",
-      phone: "+91 33 2345 6789",
-      email: "kolkata@locotraq.com",
-      coordinates: { lat: 22.5726, lng: 88.3639 },
-      hours: {
-        weekday: "9:30 AM - 6:30 PM",
-        weekend: "Closed"
-      },
-      rating: 4.5,
-      reviews: 128,
-      distance: 680,
-      isOpen: true,
-      services: ["Sales", "Support"]
-    },
-    {
-      id: 6,
-      name: "Locotraq Hyderabad Hub",
-      address: "Hitech City, Hyderabad",
-      city: "Hyderabad",
-      state: "Telangana",
-      pincode: "500081",
-      phone: "+91 40 3456 7890",
-      email: "hyderabad@locotraq.com",
-      coordinates: { lat: 17.4485, lng: 78.3908 },
-      hours: {
-        weekday: "9:00 AM - 7:00 PM",
-        weekend: "10:00 AM - 4:00 PM"
-      },
-      rating: 4.7,
-      reviews: 175,
-      distance: 1120,
-      isOpen: true,
-      services: ["Sales", "Support", "Installation", "Corporate"]
-    }
   ];
 
   const cities = ['all', ...new Set(stores.map(store => store.city))];

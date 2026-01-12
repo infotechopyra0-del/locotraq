@@ -8,8 +8,9 @@ import {
   Clock, Grid, List
 } from 'lucide-react';
 
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+
 interface WishlistItem {
   _id: string;
   productId: string;
@@ -66,7 +67,6 @@ const DynamicWishlistPage = () => {
         setTotalItems(data.totalItems || 0);
         setPriceDropCount(data.priceDropCount || 0);
       } else {
-        // On error, show empty state instead of error screen
         setWishlistItems([]);
         setTotalItems(0);
         setPriceDropCount(0);

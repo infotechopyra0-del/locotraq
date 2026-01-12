@@ -20,8 +20,7 @@ import { products, GPSProducts } from '@/lib/products';
 const getRelatedProducts = () => {
   const productList = products();
   return productList
-    .filter(p => p.isFeatured) // Show featured products as related
-    .slice(0, 3) // Limit to 3 products
+    .filter(p => p.isFeatured)
     .map(p => ({
       id: p.id,
       name: p.productName,
@@ -497,7 +496,7 @@ export default function ProductDetailPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 min-w-[150px] px-6 py-4 font-bold transition-all flex items-center justify-center space-x-2 ${
+                  className={`flex-1 min-w-37.5 px-6 py-4 font-bold transition-all flex items-center justify-center space-x-2 ${
                     activeTab === tab.id
                       ? 'bg-orange-600 text-white'
                       : 'text-gray-600 hover:bg-gray-50'
