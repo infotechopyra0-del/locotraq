@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { 
-  ShoppingCart, Trash2, Plus, Minus, ArrowRight, Shield, 
+import {
+  ShoppingCart, Trash2, Plus, Minus, ArrowRight, Shield,
   Truck, Tag, AlertCircle, Lock, CreditCard, Heart,
   Gift, Percent, ChevronRight, Package, Clock, Loader
 } from 'lucide-react';
@@ -45,11 +45,12 @@ const CartPage = () => {
     const checkAuthAndFetchCart = async () => {
       try {
         const sessionResponse = await fetch('/api/auth/session');
-        
+
         if (!sessionResponse.ok) {
           setIsAuthenticated(false);
           setCartItems([]);
           setLoading(false);
+          router.replace(`/auth/login?callbackUrl=/profile/cart`);
           return;
         }
 
@@ -58,9 +59,11 @@ const CartPage = () => {
           setIsAuthenticated(false);
           setCartItems([]);
           setLoading(false);
+          // Redirect to login if not authenticated
+          router.replace(`/auth/login?callbackUrl=/profile/cart`);
           return;
         }
-        
+
         const sessionData = await sessionResponse.json();
         if (sessionData?.user?.email) {
           setIsAuthenticated(true);
@@ -80,17 +83,21 @@ const CartPage = () => {
         } else {
           setIsAuthenticated(false);
           setCartItems([]);
+          // Redirect to login if not authenticated
+          router.replace(`/auth/login?callbackUrl=/profile/cart`);
         }
       } catch (error) {
         setIsAuthenticated(false);
         setCartItems([]);
+        // Redirect to login if not authenticated
+        router.replace(`/auth/login?callbackUrl=/profile/cart`);
       } finally {
         setLoading(false);
       }
     };
 
     checkAuthAndFetchCart();
-  }, []);
+  }, [router]);
   if (loading) {
     return (
       <>
@@ -106,35 +113,20 @@ const CartPage = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Login Required</h1>
-            <p className="text-gray-600">Please login to view your cart</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
   const validPromoCodes: PromoCode[] = [
     { code: 'SAVE10', discount: 10, type: 'percentage' },
     { code: 'FLAT500', discount: 500, type: 'fixed' },
     { code: 'NEWYEAR40', discount: 40, type: 'percentage' }
   ];
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const savings = cartItems.reduce((sum, item) => 
+  const savings = cartItems.reduce((sum, item) =>
     sum + ((item.originalPrice - item.price) * item.quantity), 0
   );
   const shipping = subtotal >= 10000 ? 0 : 150;
   let discount = 0;
   if (appliedPromo) {
-    discount = appliedPromo.type === 'percentage' 
-      ? (subtotal * appliedPromo.discount) / 100 
+    discount = appliedPromo.type === 'percentage'
+      ? (subtotal * appliedPromo.discount) / 100
       : appliedPromo.discount;
   }
   const tax = Math.round((subtotal - discount) * 0.18);
@@ -142,7 +134,7 @@ const CartPage = () => {
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    
+
     setCartItems(items =>
       items.map(item => {
         if (item.id === id) {
@@ -162,7 +154,7 @@ const CartPage = () => {
     const promo = validPromoCodes.find(
       p => p.code.toLowerCase() === promoCode.toLowerCase()
     );
-    
+
     if (promo) {
       setAppliedPromo(promo);
       setPromoError('');
@@ -188,29 +180,35 @@ const CartPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-16">
-            <div className="inline-block bg-orange-100 p-6 rounded-full mb-6">
-              <ShoppingCart className="w-16 h-16 text-orange-600" />
+      <>
+        {/* Navbar */}
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center py-16">
+              <div className="inline-block bg-orange-100 p-6 rounded-full mb-6">
+                <ShoppingCart className="w-16 h-16 text-orange-600" />
+              </div>
+              <h2 className="text-3xl font-black text-gray-900 mb-4">
+                Your Cart is Empty
+              </h2>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Looks like you haven't added any items to your cart yet.
+                Start shopping and discover our amazing GPS tracking devices!
+              </p>
+              <a
+                href="/products"
+                className="inline-flex items-center bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-lg"
+              >
+                Start Shopping
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </a>
             </div>
-            <h2 className="text-3xl font-black text-gray-900 mb-4">
-              Your Cart is Empty
-            </h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Looks like you haven't added any items to your cart yet. 
-              Start shopping and discover our amazing GPS tracking devices!
-            </p>
-            <a
-              href="/products"
-              className="inline-flex items-center bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-lg"
-            >
-              Start Shopping
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </a>
           </div>
         </div>
-      </div>
+        {/*Footer*/}
+        <Footer />
+      </>
     );
   }
 
@@ -289,7 +287,7 @@ const CartPage = () => {
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Remove Button - Desktop */}
                       <button
                         onClick={() => removeItem(item.id)}
@@ -379,8 +377,8 @@ const CartPage = () => {
                         <div>
                           <div className="font-bold text-green-700">{appliedPromo.code}</div>
                           <div className="text-sm text-green-600">
-                            {appliedPromo.type === 'percentage' 
-                              ? `${appliedPromo.discount}% OFF` 
+                            {appliedPromo.type === 'percentage'
+                              ? `${appliedPromo.discount}% OFF`
                               : `₹${appliedPromo.discount} OFF`}
                           </div>
                         </div>
@@ -474,7 +472,7 @@ const CartPage = () => {
                       Add ₹{(10000 - subtotal).toLocaleString()} more for FREE shipping!
                     </p>
                     <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-orange-600 rounded-full transition-all duration-500"
                         style={{ width: `${(subtotal / 10000) * 100}%` }}
                       />

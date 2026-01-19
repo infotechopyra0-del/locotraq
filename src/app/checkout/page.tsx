@@ -9,6 +9,8 @@ import {
   ArrowLeft, Lock, Tag, Calculator
 } from 'lucide-react';
 import Image from 'next/image';
+import Navbar from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: string;
@@ -306,10 +308,10 @@ function CheckoutForm() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-orange-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading checkout...</p>
+          <p className="text-gray-600">Loading checkout...</p>
         </div>
       </div>
     );
@@ -318,254 +320,247 @@ function CheckoutForm() {
   if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-gray-900 py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center text-gray-400 hover:text-orange-500 transition-colors mr-4"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </button>
-          <h1 className="text-3xl font-bold text-white">Secure Checkout</h1>
-          <Shield className="w-6 h-6 text-green-500 ml-2" />
+    <>
+      <Navbar />
+      {/* Hero Header */}
+      <section className="bg-linear-to-r from-orange-600 to-orange-500 text-white py-12 mb-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex items-center mb-4">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-white/80 hover:text-white transition-colors mr-4"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back
+            </button>
+            <h1 className="text-3xl md:text-4xl font-black">Secure Checkout</h1>
+            <Shield className="w-6 h-6 text-green-300 ml-2" />
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Shipping Information */}
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-              <h2 className="text-xl font-bold text-white mb-4 flex items-center">
-                <User className="w-5 h-5 text-orange-500 mr-2" />
-                Shipping Information
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    First Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                    placeholder="Enter first name"
-                  />
+      </section>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Checkout Form */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Shipping Information */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <User className="w-5 h-5 text-orange-500 mr-2" />
+                  Shipping Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                      placeholder="Enter first name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                      placeholder="Enter last name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email *
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="email"
+                        value={userData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                        placeholder="Enter email"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone *
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="tel"
+                        value={userData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                        placeholder="+91 1234567890"
+                      />
+                    </div>
+                  </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Last Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                    placeholder="Enter last name"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Email *
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Street Address *
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                    <input
-                      type="email"
-                      value={userData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                      placeholder="Enter email"
+                    <MapPin className="absolute left-3 top-4 w-5 h-5 text-gray-400" />
+                    <textarea
+                      value={userData.address.street}
+                      onChange={(e) => handleInputChange('address.street', e.target.value)}
+                      rows={3}
+                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 resize-none"
+                      placeholder="Enter full address"
                     />
                   </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Phone *
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City *
+                    </label>
                     <input
-                      type="tel"
-                      value={userData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                      placeholder="+91 1234567890"
+                      type="text"
+                      value={userData.address.city}
+                      onChange={(e) => handleInputChange('address.city', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                      placeholder="City"
                     />
                   </div>
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Street Address *
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-4 w-5 h-5 text-gray-500" />
-                  <textarea
-                    value={userData.address.street}
-                    onChange={(e) => handleInputChange('address.street', e.target.value)}
-                    rows={3}
-                    className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white resize-none"
-                    placeholder="Enter full address"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.city}
-                    onChange={(e) => handleInputChange('address.city', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                    placeholder="City"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    State *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.state}
-                    onChange={(e) => handleInputChange('address.state', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                    placeholder="State"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Pincode *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.pincode}
-                    onChange={(e) => handleInputChange('address.pincode', e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white"
-                    placeholder="123456"
-                    maxLength={6}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      State *
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.address.state}
+                      onChange={(e) => handleInputChange('address.state', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                      placeholder="State"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pincode *
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.address.pincode}
+                      onChange={(e) => handleInputChange('address.pincode', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                      placeholder="123456"
+                      maxLength={6}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="space-y-6">
-            {/* Product Details */}
-            {product && (
-              <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-                  <Package className="w-5 h-5 text-orange-500 mr-2" />
-                  Order Summary
-                </h3>
-                
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="relative w-16 h-16 bg-gray-700 rounded-lg overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white">{product.name}</h4>
-                    <p className="text-gray-400">Qty: {product.quantity}</p>
-                    <p className="text-orange-500 font-bold">₹{product.price.toLocaleString()}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-700 pt-4 space-y-2">
-                  <div className="flex justify-between text-gray-300">
-                    <span>Subtotal</span>
-                    <span>₹{orderSummary.subtotal.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-300">
-                    <span>Tax (18% GST)</span>
-                    <span>₹{orderSummary.tax.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-300">
-                    <span>Shipping</span>
-                    <span>{orderSummary.shippingCost === 0 ? 'FREE' : `₹${orderSummary.shippingCost}`}</span>
-                  </div>
-                  {orderSummary.discount > 0 && (
-                    <div className="flex justify-between text-green-400">
-                      <span>Discount</span>
-                      <span>-₹{orderSummary.discount.toLocaleString()}</span>
+            {/* Order Summary */}
+            <div className="space-y-6">
+              {/* Product Details */}
+              {product && (
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <Package className="w-5 h-5 text-orange-500 mr-2" />
+                    Order Summary
+                  </h3>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                  )}
-                  <div className="border-t border-gray-700 pt-2">
-                    <div className="flex justify-between text-white text-lg font-bold">
-                      <span>Total</span>
-                      <span>₹{orderSummary.total.toLocaleString()}</span>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{product.name}</h4>
+                      <p className="text-gray-600">Qty: {product.quantity}</p>
+                      <p className="text-orange-600 font-bold">₹{product.price.toLocaleString()}</p>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* Payment Button */}
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-              {error && (
-                <div className="mb-4 p-4 bg-red-500/10 border border-red-500/50 rounded-xl flex items-start">
-                  <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 shrink-0" />
-                  <p className="text-red-400 text-sm">{error}</p>
+                  <div className="border-t border-gray-200 pt-4 space-y-2">
+                    <div className="flex justify-between text-gray-700">
+                      <span>Subtotal</span>
+                      <span>₹{orderSummary.subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Tax (18% GST)</span>
+                      <span>₹{orderSummary.tax.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Shipping</span>
+                      <span>{orderSummary.shippingCost === 0 ? 'FREE' : `₹${orderSummary.shippingCost}`}</span>
+                    </div>
+                    {orderSummary.discount > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Discount</span>
+                        <span>-₹{orderSummary.discount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-gray-200 pt-2">
+                      <div className="flex justify-between text-gray-900 text-lg font-bold">
+                        <span>Total</span>
+                        <span>₹{orderSummary.total.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
-
-              <button
-                onClick={handlePayment}
-                disabled={processing || !razorpayLoaded}
-                className="w-full bg-linear-to-r from-orange-600 to-orange-500 text-white py-4 rounded-xl font-bold hover:from-orange-500 hover:to-orange-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-lg shadow-orange-500/30"
-              >
-                {processing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-5 h-5 mr-2" />
-                    Pay ₹{orderSummary.total.toLocaleString()} Securely
-                  </>
+              {/* Payment Button */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow">
+                {error && (
+                  <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded-xl flex items-start">
+                    <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 shrink-0" />
+                    <p className="text-red-600 text-sm">{error}</p>
+                  </div>
                 )}
-              </button>
-
-              <div className="mt-4 flex items-center justify-center text-sm text-gray-400">
-                <Shield className="w-4 h-4 mr-1" />
-                Secured by Razorpay • SSL Encrypted
-              </div>
-            </div>
-
-            {/* Free Shipping Info */}
-            {orderSummary.subtotal < 1000 && (
-              <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
-                <div className="flex items-center">
-                  <Truck className="w-5 h-5 text-orange-500 mr-2" />
-                  <p className="text-orange-400 text-sm">
-                    Add ₹{(1000 - orderSummary.subtotal).toLocaleString()} more for FREE shipping!
-                  </p>
+                <button
+                  onClick={handlePayment}
+                  disabled={processing || !razorpayLoaded}
+                  className="w-full bg-linear-to-r from-orange-600 to-orange-500 text-white py-4 rounded-xl font-bold hover:from-orange-500 hover:to-orange-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-lg shadow-orange-500/30"
+                >
+                  {processing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-5 h-5 mr-2" />
+                      Pay ₹{orderSummary.total.toLocaleString()} Securely
+                    </>
+                  )}
+                </button>
+                <div className="mt-4 flex items-center justify-center text-sm text-gray-500">
+                  <Shield className="w-4 h-4 mr-1" />
+                  Secured by Razorpay • SSL Encrypted
                 </div>
               </div>
-            )}
+              {/* Free Shipping Info */}
+              {orderSummary.subtotal < 1000 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                  <div className="flex items-center">
+                    <Truck className="w-5 h-5 text-orange-500 mr-2" />
+                    <p className="text-orange-600 text-sm">
+                      Add ₹{(1000 - orderSummary.subtotal).toLocaleString()} more for FREE shipping!
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 

@@ -305,9 +305,6 @@ function LocotraqHomeCore() {
     setIsAutoPlaying(false);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
