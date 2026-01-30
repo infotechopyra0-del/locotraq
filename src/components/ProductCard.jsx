@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/product/${product.slug}`}>
+      <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
           <img
             src={isHovered && product.images[1] ? product.images[1] : product.images[0]}
@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
 
       {/* Product info */}
       <div className="mt-4">
-        <Link href={`/product/${product.slug}`}>
+        <Link href={`/products/${product.slug}`}>
           <h3 className="text-sm font-light tracking-wide hover:text-gray-600 transition-colors">
             {product.name}
           </h3>

@@ -534,7 +534,7 @@ function LocotraqHomeCore() {
         >
           {/* Image */}
           <div className="relative aspect-4/3 overflow-hidden">
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/products/${product.id}`}>
               <img
                 src={product.productImage}
                 alt={product.productName}
@@ -566,7 +566,7 @@ function LocotraqHomeCore() {
               {product.category}
             </span>
 
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/products/${product.id}`}>
               <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 hover:text-orange-600">
                 {product.productName}
               </h3>

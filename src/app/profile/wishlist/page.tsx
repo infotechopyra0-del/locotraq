@@ -417,7 +417,7 @@ const DynamicWishlistPage = () => {
               <div className={`relative overflow-hidden ${
                 viewMode === 'list' ? 'w-48 shrink-0' : 'aspect-4/3'
               }`}>
-                <a href={`/product/${item.slug || item.productId}`}>
+                <a href={`/products/${item.slug || item.productId}`}>
                   <img
                     src={item.productImage}
                     alt={item.productName}
@@ -432,7 +432,7 @@ const DynamicWishlistPage = () => {
                   {item.category}
                 </span>
 
-                <a href={`/product/${item.slug || item.productId}`}>
+                <a href={`/products/${item.slug || item.productId}`}>
                   <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors">
                     {item.productName}
                   </h3>
