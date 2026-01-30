@@ -54,7 +54,8 @@ const Footer = () => {
               <ul className="space-y-2">
                 <li><a href="#" className="hover:text-orange-600 transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-orange-600 transition-colors">Track Order</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Returns</a></li>
+                <li><Link href="/shipping" className="hover:text-orange-600 transition-colors">Shipping & Delivery</Link></li>
+                <li><Link href="/returns" className="hover:text-orange-600 transition-colors">Returns</Link></li>
                 <li><a href="#" className="hover:text-orange-600 transition-colors">Contact Us</a></li>
               </ul>
             </div>
@@ -80,7 +81,7 @@ const Footer = () => {
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-sm">
-              © 2026 Locotraq. All rights reserved. | Privacy Policy | Terms & Conditions
+              © 2026 Locotraq. All rights reserved. | <Link href="/privacy-policy" className="hover:text-orange-600">Privacy Policy</Link> | <Link href="/terms-of-service" className="hover:text-orange-600">Terms & Conditions</Link>
             </p>
           </div>
         </div>
