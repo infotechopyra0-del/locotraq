@@ -161,10 +161,10 @@ const blogPosts = [
   }
 ];
 const categories = [
-    { name: 'VEHICAL TRACKERS', image: 'https://hips.hearstapps.com/hmg-prod/images/gettyimages-2196644631-68b876f1b7c39.jpg?crop=1xw:1xh;center,top', link: '/shop?category=tops' },
-    { name: 'PERSONAL TRACKERS', image: 'https://media.wired.com/photos/593278065c4fbd732b552ed0/3:2/w_2560%2Cc_limit/GPS-Tracker-in-Hands_Jon-Snyder.jpg', link: '/shop?category=abayas' },
-    { name: 'FLEET MANAGEMENT', image: 'https://stavecorp.com/wp-content/uploads/2025/05/FTSM-Post-Photo1.jpg', link: '/shop?category=co-ords' },
-    { name: 'INDUSTRIAL SOLUTIONS', image: 'https://tiindia.com/wp-content/uploads/2021/09/cg-power-bg.jpg', link: '/shop?category=dresses' }
+    { name: 'Vehicle Trackers', image: 'https://hips.hearstapps.com/hmg-prod/images/gettyimages-2196644631-68b876f1b7c39.jpg?crop=1xw:1xh;center,top', link: '/products?category=vehicle' },
+    { name: 'Personal Trackers', image: 'https://media.wired.com/photos/593278065c4fbd732b552ed0/3:2/w_2560%2Cc_limit/GPS-Tracker-in-Hands_Jon-Snyder.jpg', link: '/products?category=personal' },
+    { name: 'Fleet Management', image: 'https://stavecorp.com/wp-content/uploads/2025/05/FTSM-Post-Photo1.jpg', link: '/products?category=fleet' },
+    { name: 'Industrial Solutions', image: 'https://tiindia.com/wp-content/uploads/2021/09/cg-power-bg.jpg', link: '/products?category=industrial' }
   ];
 export default function LocotraqHome() {
   return <LocotraqHomeCore />;
@@ -265,7 +265,6 @@ function LocotraqHomeCore() {
         });
         setCartCount(data.cartCount || 0);
       } else {
-        // Check if unauthorized (not logged in)
         if (res.status === 401) {
           toast.error('Please login to add items to cart', {
             description: 'You need to be logged in to add products to your cart',
